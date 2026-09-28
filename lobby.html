@@ -378,8 +378,7 @@
 
         </div>
 
-
-        <div id="playersList">
+                <div id="playersList">
 
             <div class="waiting">
                 Chargement des joueurs...
@@ -388,10 +387,53 @@
         </div>
 
 
+        <!-- =====================================================
+             PERSONNAGE DU JOUEUR
+        ====================================================== -->
+
+        <div
+            id="characterArea"
+            class="character-area"
+        >
+
+            <div class="character-title">
+                🧙 Mon personnage
+            </div>
+
+
+            <div
+                id="selectedCharacter"
+                class="character-selected"
+            >
+                <strong>Aucun personnage sélectionné</strong>
+                <span>Choisis un personnage pour cette partie.</span>
+            </div>
+
+
+            <div
+                id="charactersList"
+                class="characters-list"
+            >
+                <div class="waiting">
+                    Chargement des personnages...
+                </div>
+            </div>
+
+
+            <button
+                id="createCharacterButton"
+                class="create-character-button"
+                onclick="createCharacter()"
+            >
+                + Créer un personnage
+            </button>
+
+        </div>
+
+
         <!-- Bouton prêt pour le joueur -->
 
         <div id="playerReadyArea"></div>
-
     </div>
 
 
