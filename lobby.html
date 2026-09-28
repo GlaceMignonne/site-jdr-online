@@ -720,7 +720,9 @@ async function selectCharacter(character) {
 function updateSelectedCharacterDisplay() {
 
     const box =
-        document.getElementById("selectedCharacter");
+        document.getElementById(
+            "selectedCharacter"
+        );
 
 
     if (!selectedCharacterId) {
@@ -736,33 +738,41 @@ function updateSelectedCharacterDisplay() {
     }
 
 
-    const buttons =
-        document.querySelectorAll(
+    const selectedButton =
+        [...document.querySelectorAll(
             ".character-option"
+        )]
+        .find(button =>
+            button.dataset.characterId ===
+            selectedCharacterId
         );
 
 
-    buttons.forEach(button => {
+    if (!selectedButton) {
 
-        button.classList.remove(
-            "selected"
-        );
+        box.innerHTML =
+            `
+            <strong>Personnage sélectionné</strong>
+            <span>Chargement...</span>
+            `;
 
-    });
-
-
-    const selected =
-        document.querySelector(
-            ".character-option.selected"
-        );
-
-
-    if (!selected) {
-
-        // La sélection visuelle sera reconstruite
-        // par renderMyCharacters() si nécessaire.
+        return;
 
     }
+
+
+    const characterName =
+        selectedButton.dataset.characterName;
+
+    const characterClass =
+        selectedButton.dataset.characterClass;
+
+
+    box.innerHTML =
+        `
+        <strong>${characterName}</strong>
+        <span>${characterClass}</span>
+        `;
 
 }
 
