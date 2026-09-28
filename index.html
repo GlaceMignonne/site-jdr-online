@@ -1772,90 +1772,34 @@ async function loginIdentity() {
   
   }
   
-  
   /* =========================================================
      CREER UNE PARTIE
   ========================================================= */
   
- async function createGame() {
+ const userId =
+    localStorage.getItem("jdr_user_id");
 
-    const name = document
-        .getElementById("gmName")
-        .value
-        .trim();
-
-    const result = document
-        .getElementById("createResult");
-
-    if (!name) {
-        result.className = "message error";
-        result.textContent =
-            "Entre ton nom avant de créer la partie.";
-        return;
-    }
-
-    // Générer un code de partie
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "";
-
-    for (let i = 0; i < 6; i++) {
-        code += chars.charAt(
-            Math.floor(Math.random() * chars.length)
-        );
-    }
-
-    // Identifiant unique de la partie
-    const id = crypto.randomUUID();
-
-    // Créer la partie dans Supabase
-    const { data, error } = await supabaseClient
-        .from("parties")
-        .insert([
-            {
-                id: id,
-                code: code,
-                mj_name: name,
-                started: false
-            }
-        ])
-        .select()
-        .single();
-
-    if (error) {
-
-        console.error("Erreur Supabase :", error);
-
-        result.className = "message error";
-        result.textContent =
-            "Impossible de créer la partie.";
-
-        return;
-    }
-
-    // Sauvegarder les informations du MJ
-    localStorage.setItem("jdr_role", "mj");
-    localStorage.setItem("jdr_name", name);
-    localStorage.setItem("jdr_party_code", data.code);
-
-    // Afficher le code
-    result.className = "message success";
-
-    result.innerHTML =
-        "Partie créée !<br><strong>Code : " +
-        data.code +
-        "</strong>";
-
-    console.log("Partie créée :", data);
-
-    setTimeout(() => {
-        window.location.href = "lobby.html";
-    }, 1000);
+if (!userId) {
+    result.className = "message error";
+    result.textContent =
+        "Tu dois être connecté en tant que MJ.";
+    return;
 }
-  
-  /* =========================================================
-     REJOINDRE UNE PARTIE
-  ========================================================= */
-  
+
+const { data, error } = await supabaseClient
+    .from("parties")
+    .insert([
+        {
+            id: id,
+            code: code,
+            mj_name: name,
+            mj_user_id: userId,
+            started: false
+        }
+    ])
+    .select()
+    .single();
+   
 /* =========================================================
    REJOINDRE UNE PARTIE
 ========================================================= */
