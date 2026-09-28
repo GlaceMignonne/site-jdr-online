@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -1050,7 +1050,23 @@ function updateSelectedCharacterDisplay() {
 
         }
 
+        if (!me.character_id) {
 
+            const message =
+                document.createElement("div");
+
+            message.className =
+                "waiting";
+
+            message.textContent =
+                "⚠️ Sélectionne un personnage avant de te déclarer prêt.";
+
+            area.appendChild(message);
+
+            return;
+
+        }
+        
         const button =
             document.createElement("button");
 
