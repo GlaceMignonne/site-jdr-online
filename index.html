@@ -1772,34 +1772,168 @@ async function loginIdentity() {
   
   }
   
-  /* =========================================================
-     CREER UNE PARTIE
-  ========================================================= */
-  
- const userId =
-    localStorage.getItem("jdr_user_id");
+ /* =========================================================
+   CREER UNE PARTIE
+========================================================= */
 
-if (!userId) {
-    result.className = "message error";
-    result.textContent =
-        "Tu dois être connecté en tant que MJ.";
-    return;
+async function createGame() {
+
+    const name =
+        document
+            .getElementById("gmName")
+            .value
+            .trim();
+
+    const result =
+        document
+            .getElementById("createResult");
+
+
+    /* =====================================================
+       VERIFIER LE NOM
+    ===================================================== */
+
+    if (!name) {
+
+        result.className = "message error";
+        result.textContent =
+            "Entre ton nom avant de créer la partie.";
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       RECUPERER L'ID PERMANENT DU MJ
+    ===================================================== */
+
+    const userId =
+        localStorage.getItem("jdr_user_id");
+
+
+    if (!userId) {
+
+        result.className = "message error";
+        result.textContent =
+            "Tu dois être connecté en tant que MJ.";
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       GENERER LE CODE DE PARTIE
+    ===================================================== */
+
+    const code =
+        generateGameCode();
+
+
+    /* =====================================================
+       IDENTIFIANT DE LA PARTICIPATION / PARTIE
+    ===================================================== */
+
+    const id =
+        crypto.randomUUID();
+
+
+    /* =====================================================
+       CREER LA PARTIE DANS SUPABASE
+    ===================================================== */
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("parties")
+        .insert([
+            {
+                id: id,
+                code: code,
+                mj_name: name,
+                mj_user_id: userId,
+                started: false
+            }
+        ])
+        .select()
+        .single();
+
+
+    /* =====================================================
+       ERREUR
+    ===================================================== */
+
+    if (error) {
+
+        console.error(
+            "Erreur Supabase :",
+            error
+        );
+
+        result.className = "message error";
+
+        result.textContent =
+            "Impossible de créer la partie.";
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       SAUVEGARDER LES INFORMATIONS
+    ===================================================== */
+
+    localStorage.setItem(
+        "jdr_role",
+        "mj"
+    );
+
+    localStorage.setItem(
+        "jdr_name",
+        name
+    );
+
+    localStorage.setItem(
+        "jdr_party_code",
+        data.code
+    );
+
+
+    /* =====================================================
+       MESSAGE DE REUSSITE
+    ===================================================== */
+
+    result.className =
+        "message success";
+
+    result.innerHTML =
+        "Partie créée !<br><strong>Code : " +
+        data.code +
+        "</strong>";
+
+
+    console.log(
+        "Partie créée :",
+        data
+    );
+
+
+    /* =====================================================
+       ALLER AU LOBBY
+    ===================================================== */
+
+    setTimeout(() => {
+
+        window.location.href =
+            "lobby.html";
+
+    }, 1000);
+
 }
 
-const { data, error } = await supabaseClient
-    .from("parties")
-    .insert([
-        {
-            id: id,
-            code: code,
-            mj_name: name,
-            mj_user_id: userId,
-            started: false
-        }
-    ])
-    .select()
-    .single();
-   
 /* =========================================================
    REJOINDRE UNE PARTIE
 ========================================================= */
