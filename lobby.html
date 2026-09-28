@@ -2,217 +2,964 @@
 <html lang="fr">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Lobby - JDR</title>
 
+
     <style>
+
         body {
+
             margin: 0;
+
             font-family: Arial, sans-serif;
+
             background: #111;
+
             color: white;
-            text-align: center;
+
         }
+
 
         .container {
-            max-width: 700px;
-            margin: 60px auto;
-            padding: 30px;
+
+            max-width: 750px;
+
+            margin: 50px auto;
+
+            padding: 20px;
+
         }
+
 
         h1 {
+
+            text-align: center;
+
             font-size: 36px;
+
             margin-bottom: 30px;
+
         }
+
 
         .box {
+
             background: #1e1e1e;
+
             border: 1px solid #444;
+
             border-radius: 12px;
+
             padding: 25px;
+
             margin-bottom: 20px;
+
         }
+
+
+        .code-label {
+
+            text-align: center;
+
+            color: #aaa;
+
+        }
+
 
         .code {
-            font-size: 32px;
+
+            text-align: center;
+
+            font-size: 34px;
+
             font-weight: bold;
+
             letter-spacing: 6px;
-            margin: 15px 0;
+
+            margin: 12px 0 20px;
+
         }
+
 
         .mj {
+
+            text-align: center;
+
             font-size: 20px;
+
         }
+
 
         .players-title {
+
             font-size: 24px;
+
             margin-bottom: 15px;
+
         }
 
-        #playersList {
-            color: #aaa;
-            min-height: 40px;
-        }
 
         .player {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
             background: #292929;
+
             border-radius: 8px;
-            padding: 12px;
-            margin: 8px 0;
-            text-align: left;
+
+            padding: 14px;
+
+            margin: 10px 0;
+
         }
 
-        .online {
-            color: #55dd77;
-            margin-right: 8px;
+
+        .player-name {
+
+            font-size: 18px;
+
         }
+
+
+        .player-status {
+
+            font-size: 14px;
+
+        }
+
+
+        .ready {
+
+            color: #55dd77;
+
+        }
+
+
+        .not-ready {
+
+            color: #ffb347;
+
+        }
+
+
+        button {
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 12px 18px;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+            margin-top: 10px;
+
+        }
+
+
+        .ready-button {
+
+            width: 100%;
+
+            background: #444;
+
+            color: white;
+
+        }
+
+
+        .ready-button:hover {
+
+            background: #555;
+
+        }
+
+
+        .launch-button {
+
+            width: 100%;
+
+            background: #4caf50;
+
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            padding: 16px;
+
+        }
+
+
+        .launch-button:hover {
+
+            background: #5bc463;
+
+        }
+
+
+        .launch-button:disabled {
+
+            background: #333;
+
+            color: #777;
+
+            cursor: not-allowed;
+
+        }
+
 
         .waiting {
+
             color: #aaa;
+
+            text-align: center;
+
+            padding: 10px;
+
         }
 
+
         #status {
-            margin-top: 20px;
+
+            text-align: center;
+
             color: #aaa;
+
+            margin-top: 20px;
+
         }
+
+
+        .error {
+
+            color: #ff6666;
+
+            text-align: center;
+
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
-    <div class="container">
 
-        <h1>🎲 Lobby de la partie</h1>
+<div class="container">
 
-        <div class="box">
 
-            <div>Code de la partie</div>
+    <h1>🎲 Lobby de la partie</h1>
 
-            <div id="partyCode" class="code">
-                Chargement...
-            </div>
 
-            <div id="mjName" class="mj">
-                Chargement du MJ...
-            </div>
+    <!-- Informations de la partie -->
+
+    <div class="box">
+
+        <div class="code-label">
+            Code de la partie
+        </div>
+
+
+        <div id="partyCode"
+             class="code">
+
+            Chargement...
 
         </div>
 
 
-        <div class="box">
+        <div id="mjName"
+             class="mj">
 
-            <div class="players-title">
-                👥 Joueurs
-            </div>
+            Chargement du MJ...
 
-            <div id="playersList">
-                <div class="waiting">
-                    Aucun joueur connecté pour le moment.
-                </div>
-            </div>
-
-        </div>
-
-
-        <div id="status">
-            ⏳ En attente du lancement de la partie...
         </div>
 
     </div>
 
 
-    <!-- Supabase -->
+    <!-- Liste des joueurs -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <div class="box">
 
-    <script src="supabase.js"></script>
+        <div class="players-title">
 
+            👥 Joueurs
 
-    <script>
-
-        async function loadParty() {
-
-            const code = localStorage.getItem("jdr_party_code");
-
-            const partyCode = document.getElementById("partyCode");
-            const mjName = document.getElementById("mjName");
-            const status = document.getElementById("status");
-
-            // Vérifier qu'une partie existe
-            if (!code) {
-
-                partyCode.textContent = "Aucune partie";
-
-                mjName.textContent =
-                    "Aucune partie trouvée.";
-
-                status.textContent =
-                    "Retourne à l'accueil pour créer ou rejoindre une partie.";
-
-                return;
-            }
+        </div>
 
 
-            // Chercher la partie dans Supabase
+        <div id="playersList">
 
-            const { data, error } = await supabaseClient
-                .from("parties")
-                .select("code, mj_name, started")
-                .eq("code", code)
-                .single();
+            <div class="waiting">
+                Chargement des joueurs...
+            </div>
 
-
-            // Erreur
-
-            if (error) {
-
-                console.error("Erreur Supabase :", error);
-
-                partyCode.textContent = code;
-
-                mjName.textContent =
-                    "Impossible de charger le MJ.";
-
-                status.textContent =
-                    "Erreur lors du chargement de la partie.";
-
-                return;
-            }
+        </div>
 
 
-            // Afficher les informations
+        <!-- Bouton prêt pour le joueur -->
 
-            partyCode.textContent =
-                data.code;
+        <div id="playerReadyArea"></div>
 
-            mjName.textContent =
-                "MJ : " + data.mj_name;
+    </div>
 
 
-            // Statut de la partie
+    <!-- Zone MJ -->
 
-            if (data.started) {
+    <div id="mjArea"
+         class="box"
+         style="display:none;">
 
-                status.textContent =
-                    "🚀 La partie a commencé !";
+        <div class="players-title">
+            👑 Maître du jeu
+        </div>
 
-            } else {
 
-                status.textContent =
-                    "⏳ En attente du lancement de la partie...";
+        <button id="launchButton"
+                class="launch-button"
+                onclick="launchGame()">
 
-            }
+            🚀 LANCER LA PARTIE
+
+        </button>
+
+
+        <div id="launchInfo"
+             class="waiting">
+
+            En attente des joueurs...
+
+        </div>
+
+    </div>
+
+
+    <div id="status">
+        ⏳ Connexion au lobby...
+    </div>
+
+
+</div>
+
+
+<!-- Supabase -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<script src="supabase.js"></script>
+
+
+<script>
+
+
+    // =====================================================
+    // VARIABLES
+    // =====================================================
+
+
+    const partyCode =
+        localStorage.getItem("jdr_party_code");
+
+
+    const role =
+        localStorage.getItem("jdr_role");
+
+
+    const playerId =
+        localStorage.getItem("jdr_player_id");
+
+
+    let partyStarted = false;
+
+
+    // =====================================================
+    // CHARGER LA PARTIE
+    // =====================================================
+
+
+    async function loadParty() {
+
+
+        if (!partyCode) {
+
+            document.getElementById("status").textContent =
+                "Aucune partie trouvée.";
+
+            return;
 
         }
 
 
-        // Charger la partie
+        const { data, error } =
+            await supabaseClient
+
+                .from("parties")
+
+                .select("code, mj_name, started")
+
+                .eq("code", partyCode)
+
+                .single();
+
+
+        if (error) {
+
+            console.error(
+                "Erreur partie :",
+                error
+            );
+
+            document.getElementById("status").textContent =
+                "Impossible de charger la partie.";
+
+            return;
+
+        }
+
+
+        document.getElementById("partyCode").textContent =
+            data.code;
+
+
+        document.getElementById("mjName").textContent =
+            "MJ : " + data.mj_name;
+
+
+        partyStarted =
+            data.started;
+
+
+        // Si la partie est déjà lancée
+
+        if (partyStarted) {
+
+            goToGame();
+
+            return;
+
+        }
+
+
+        document.getElementById("status").textContent =
+            "⏳ En attente du lancement de la partie...";
+
+
+        // Afficher la zone MJ
+
+        if (role === "mj") {
+
+            document.getElementById("mjArea").style.display =
+                "block";
+
+        }
+
+
+        // Charger les joueurs
+
+        await loadPlayers();
+
+    }
+
+
+    // =====================================================
+    // CHARGER LES JOUEURS
+    // =====================================================
+
+
+    async function loadPlayers() {
+
+
+        const playersList =
+            document.getElementById("playersList");
+
+
+        const { data, error } =
+            await supabaseClient
+
+                .from("players")
+
+                .select("id, name, character_name, connected, ready")
+
+                .eq("party_code", partyCode)
+
+                .eq("connected", true)
+
+                .order("name");
+
+
+        if (error) {
+
+            console.error(
+                "Erreur joueurs :",
+                error
+            );
+
+            playersList.innerHTML =
+                '<div class="error">Impossible de charger les joueurs.</div>';
+
+            return;
+
+        }
+
+
+        // Aucun joueur
+
+        if (!data || data.length === 0) {
+
+            playersList.innerHTML =
+                '<div class="waiting">Aucun joueur connecté pour le moment.</div>';
+
+            updateLaunchButton([]);
+
+            return;
+
+        }
+
+
+        // Affichage
+
+        playersList.innerHTML = "";
+
+
+        data.forEach(player => {
+
+
+            const div =
+                document.createElement("div");
+
+
+            div.className =
+                "player";
+
+
+            const left =
+                document.createElement("div");
+
+
+            left.className =
+                "player-name";
+
+
+            left.textContent =
+                "🟢 " + player.name;
+
+
+            const right =
+                document.createElement("div");
+
+
+            right.className =
+                "player-status";
+
+
+            if (player.ready) {
+
+                right.textContent =
+                    "✓ PRÊT";
+
+                right.classList.add("ready");
+
+            } else {
+
+                right.textContent =
+                    "⏳ Pas prêt";
+
+                right.classList.add("not-ready");
+
+            }
+
+
+            div.appendChild(left);
+
+            div.appendChild(right);
+
+            playersList.appendChild(div);
+
+        });
+
+
+        // Zone du bouton "Prêt"
+
+        updatePlayerReadyButton(data);
+
+
+        // Zone de lancement MJ
+
+        updateLaunchButton(data);
+
+    }
+
+
+    // =====================================================
+    // BOUTON PRÊT DU JOUEUR
+    // =====================================================
+
+
+    function updatePlayerReadyButton(players) {
+
+
+        const area =
+            document.getElementById("playerReadyArea");
+
+
+        area.innerHTML = "";
+
+
+        // Le MJ n'a pas besoin de ce bouton
+
+        if (role === "mj") {
+
+            return;
+
+        }
+
+
+        const me =
+            players.find(
+                player => player.id === playerId
+            );
+
+
+        if (!me) {
+
+            return;
+
+        }
+
+
+        const button =
+            document.createElement("button");
+
+
+        button.className =
+            "ready-button";
+
+
+        if (me.ready) {
+
+            button.textContent =
+                "✓ Je suis prêt";
+
+        } else {
+
+            button.textContent =
+                "Je suis prêt";
+
+        }
+
+
+        button.onclick =
+            toggleReady;
+
+
+        area.appendChild(button);
+
+    }
+
+
+    // =====================================================
+    // CHANGER L'ÉTAT PRÊT
+    // =====================================================
+
+
+    async function toggleReady() {
+
+
+        if (!playerId) {
+
+            return;
+
+        }
+
+
+        const { data: player, error: getError } =
+            await supabaseClient
+
+                .from("players")
+
+                .select("ready")
+
+                .eq("id", playerId)
+
+                .single();
+
+
+        if (getError || !player) {
+
+            console.error(
+                "Erreur joueur :",
+                getError
+            );
+
+            return;
+
+        }
+
+
+        const { error } =
+            await supabaseClient
+
+                .from("players")
+
+                .update({
+
+                    ready: !player.ready
+
+                })
+
+                .eq("id", playerId);
+
+
+        if (error) {
+
+            console.error(
+                "Erreur ready :",
+                error
+            );
+
+            return;
+
+        }
+
+
+        await loadPlayers();
+
+    }
+
+
+    // =====================================================
+    // VERIFIER SI TOUT LE MONDE EST PRÊT
+    // =====================================================
+
+
+    function updateLaunchButton(players) {
+
+
+        if (role !== "mj") {
+
+            return;
+
+        }
+
+
+        const button =
+            document.getElementById("launchButton");
+
+
+        const info =
+            document.getElementById("launchInfo");
+
+
+        if (!players.length) {
+
+            button.disabled =
+                true;
+
+            info.textContent =
+                "Aucun joueur dans la partie.";
+
+            return;
+
+        }
+
+
+        const everyoneReady =
+            players.every(
+                player => player.ready === true
+            );
+
+
+        if (everyoneReady) {
+
+            button.disabled =
+                false;
+
+            info.textContent =
+                "✓ Tous les joueurs sont prêts !";
+
+        } else {
+
+            button.disabled =
+                true;
+
+            const notReady =
+                players.filter(
+                    player => !player.ready
+                ).length;
+
+
+            info.textContent =
+                "⏳ " +
+                notReady +
+                " joueur(s) pas encore prêt(s).";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // LANCER LA PARTIE
+    // =====================================================
+
+
+    async function launchGame() {
+
+
+        if (role !== "mj") {
+
+            return;
+
+        }
+
+
+        const { data: players, error: playersError } =
+            await supabaseClient
+
+                .from("players")
+
+                .select("id, ready")
+
+                .eq("party_code", partyCode)
+
+                .eq("connected", true);
+
+
+        if (playersError) {
+
+            console.error(
+                playersError
+            );
+
+            return;
+
+        }
+
+
+        if (!players.length) {
+
+            alert(
+                "Il faut au moins un joueur pour lancer la partie."
+            );
+
+            return;
+
+        }
+
+
+        const everyoneReady =
+            players.every(
+                player => player.ready === true
+            );
+
+
+        if (!everyoneReady) {
+
+            alert(
+                "Tous les joueurs doivent être prêts."
+            );
+
+            return;
+
+        }
+
+
+        // Passer la partie à "commencée"
+
+        const { error } =
+            await supabaseClient
+
+                .from("parties")
+
+                .update({
+
+                    started: true
+
+                })
+
+                .eq("code", partyCode);
+
+
+        if (error) {
+
+            console.error(
+                "Erreur lancement :",
+                error
+            );
+
+            alert(
+                "Impossible de lancer la partie."
+            );
+
+            return;
+
+        }
+
+
+        // Aller vers l'interface MJ
+
+        window.location.href =
+            "mj.html";
+
+    }
+
+
+    // =====================================================
+    // ALLER VERS LE JEU
+    // =====================================================
+
+
+    function goToGame() {
+
+
+        if (role === "mj") {
+
+            window.location.href =
+                "mj.html";
+
+        } else {
+
+            window.location.href =
+                "joueur.html";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // ACTUALISATION AUTOMATIQUE
+    // =====================================================
+
+
+    loadParty();
+
+
+    setInterval(() => {
 
         loadParty();
 
-    </script>
+    }, 2000);
+
+
+</script>
+
 
 </body>
 
