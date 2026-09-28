@@ -613,7 +613,18 @@ function renderMyCharacters(characters) {
             button.className =
                 "character-option";
 
+            button.dataset.characterId =
+                character.id;
 
+            button.dataset.characterName =
+                character.name ||
+                "Personnage sans nom";
+
+            button.dataset.characterClass =
+                getClassDisplayName(
+                    character.class
+                );
+            
             if (
                 character.id ===
                 selectedCharacterId
