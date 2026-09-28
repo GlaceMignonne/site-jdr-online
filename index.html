@@ -1542,85 +1542,179 @@
      REJOINDRE UNE PARTIE
   ========================================================= */
   
-  function joinGame() {
-  
-      const name =
-          document
-              .getElementById("playerName")
-              .value
-              .trim();
-  
-      const code =
-          document
-              .getElementById("gameCode")
-              .value
-              .trim()
-              .toUpperCase();
-  
-      const result =
-          document.getElementById("joinResult");
-  
-  
-      if (!name) {
-  
-          result.className = "message error";
-  
-          result.textContent =
-              "Entre ton nom.";
-  
-          return;
-  
-      }
-  
-  
-      if (code.length !== 6) {
-  
-          result.className = "message error";
-  
-          result.textContent =
-              "Le code doit contenir 6 caractères.";
-  
-          return;
-  
-      }
-  
-  
-      /*
-          POUR LE MOMENT :
-  
-          On simule simplement la connexion.
-  
-          Le vrai système vérifiera le code
-          auprès du serveur.
-      */
-  
-      localStorage.setItem(
-          "jdr_current_player",
-          JSON.stringify({
-  
-              name: name,
-  
-              code: code,
-  
-              joinedAt: Date.now()
-  
-          })
-      );
-  
-  
-      result.className = "message success";
-  
-      result.textContent =
-          "Connexion à la partie en cours...";
-  
-  
-      /*
-          Plus tard :
-  
-          window.location.href = "lobby.html";
-      */
-  
-  }
+/* =========================================================
+   REJOINDRE UNE PARTIE
+========================================================= */
+
+async function joinGame() {
+
+    const name =
+        document
+            .getElementById("playerName")
+            .value
+            .trim();
+
+    const code =
+        document
+            .getElementById("gameCode")
+            .value
+            .trim()
+            .toUpperCase();
+
+    const result =
+        document.getElementById("joinResult");
+
+
+    // Vérifier le nom
+
+    if (!name) {
+
+        result.className = "message error";
+
+        result.textContent =
+            "Entre ton nom.";
+
+        return;
+
+    }
+
+
+    // Vérifier le code
+
+    if (code.length !== 6) {
+
+        result.className = "message error";
+
+        result.textContent =
+            "Le code doit contenir 6 caractères.";
+
+        return;
+
+    }
+
+
+    // Vérifier que la partie existe
+
+    const { data: party, error: partyError } =
+        await supabaseClient
+            .from("parties")
+            .select("code, mj_name, started")
+            .eq("code", code)
+            .single();
+
+
+    if (partyError || !party) {
+
+        console.error("Partie introuvable :", partyError);
+
+        result.className = "message error";
+
+        result.textContent =
+            "Cette partie n'existe pas.";
+
+        return;
+
+    }
+
+
+    // Vérifier si la partie a déjà commencé
+
+    if (party.started) {
+
+        result.className = "message error";
+
+        result.textContent =
+            "Cette partie a déjà commencé.";
+
+        return;
+
+    }
+
+
+    // Créer l'identifiant du joueur
+
+    const playerId =
+        crypto.randomUUID();
+
+
+    // Ajouter le joueur dans Supabase
+
+    const { data: player, error: playerError } =
+        await supabaseClient
+            .from("players")
+            .insert([
+                {
+                    id: playerId,
+                    party_code: code,
+                    name: name,
+                    character_name: null,
+                    connected: true
+                }
+            ])
+            .select()
+            .single();
+
+
+    if (playerError) {
+
+        console.error(
+            "Erreur lors de l'ajout du joueur :",
+            playerError
+        );
+
+        result.className = "message error";
+
+        result.textContent =
+            "Impossible de rejoindre la partie.";
+
+        return;
+
+    }
+
+
+    // Sauvegarder les informations du joueur
+
+    localStorage.setItem(
+        "jdr_role",
+        "joueur"
+    );
+
+    localStorage.setItem(
+        "jdr_name",
+        name
+    );
+
+    localStorage.setItem(
+        "jdr_party_code",
+        code
+    );
+
+    localStorage.setItem(
+        "jdr_player_id",
+        player.id
+    );
+
+
+    // Message de réussite
+
+    result.className =
+        "message success";
+
+    result.innerHTML =
+        "Partie rejointe !<br>" +
+        "<strong>" +
+        "Bienvenue " +
+        name +
+        " !" +
+        "</strong>";
+
+
+    console.log(
+        "Joueur ajouté :",
+        player
+    );
+
+}
   
   
   /* =========================================================
