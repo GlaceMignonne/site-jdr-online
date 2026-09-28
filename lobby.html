@@ -902,7 +902,7 @@ function updateSelectedCharacterDisplay() {
 
                 .from("players")
 
-                .select("id, name, character_name, connected, ready")
+                .select("id, name, character_name, character_id, connected, ready")
 
                 .eq("party_code", partyCode)
 
