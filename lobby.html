@@ -715,7 +715,11 @@ async function selectCharacter(character) {
 
     updateSelectedCharacterDisplay();
 
-    await loadPlayers();
+   await loadPlayers();
+
+if (role === "joueur") {
+
+    await loadMyCharacters();
 
 }
 
