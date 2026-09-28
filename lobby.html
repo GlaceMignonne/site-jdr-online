@@ -503,8 +503,295 @@
 
 
     let partyStarted = false;
+    let selectedCharacterId = null;
+
+// =====================================================
+// PERSONNAGES DU JOUEUR
+// =====================================================
+
+async function loadMyCharacters() {
+
+    if (role !== "joueur") {
+        return;
+    }
 
 
+    const characterArea =
+        document.getElementById("characterArea");
+
+    const charactersList =
+        document.getElementById("charactersList");
+
+
+    characterArea.style.display = "block";
+
+
+    const {
+        data: { user },
+        error: userError
+    } = await supabaseClient.auth.getUser();
+
+
+    if (userError || !user) {
+
+        console.error(
+            "Impossible de récupérer le joueur connecté :",
+            userError
+        );
+
+        charactersList.innerHTML =
+            '<div class="error">Impossible de récupérer ton identité.</div>';
+
+        return;
+
+    }
+
+
+    const {
+        data: characters,
+        error
+    } = await supabaseClient
+        .from("characters")
+        .select("id, name, class")
+        .eq("player_id", user.id)
+        .order("name");
+
+
+    if (error) {
+
+        console.error(
+            "Erreur personnages :",
+            error
+        );
+
+        charactersList.innerHTML =
+            '<div class="error">Impossible de charger tes personnages.</div>';
+
+        return;
+
+    }
+
+
+    renderMyCharacters(
+        characters || []
+    );
+
+}
+
+// =====================================================
+// AFFICHER LES PERSONNAGES
+// =====================================================
+
+function renderMyCharacters(characters) {
+
+    const list =
+        document.getElementById("charactersList");
+
+    const selectedBox =
+        document.getElementById("selectedCharacter");
+
+
+    list.innerHTML = "";
+
+
+    if (characters.length === 0) {
+
+        list.innerHTML =
+            `
+            <div class="waiting">
+                Tu n'as aucun personnage enregistré.
+            </div>
+            `;
+
+    } else {
+
+        characters.forEach(character => {
+
+            const button =
+                document.createElement("button");
+
+            button.className =
+                "character-option";
+
+
+            if (
+                character.id ===
+                selectedCharacterId
+            ) {
+
+                button.classList.add(
+                    "selected"
+                );
+
+            }
+
+
+            const name =
+                document.createElement("div");
+
+            name.className =
+                "character-option-name";
+
+            name.textContent =
+                character.name ||
+                "Personnage sans nom";
+
+
+            const className =
+                document.createElement("div");
+
+            className.className =
+                "character-option-class";
+
+            className.textContent =
+                getClassDisplayName(
+                    character.class
+                );
+
+
+            button.appendChild(name);
+            button.appendChild(className);
+
+
+            button.onclick =
+                () => {
+
+                    selectCharacter(
+                        character
+                    );
+
+                };
+
+
+            list.appendChild(button);
+
+        });
+
+    }
+
+
+    updateSelectedCharacterDisplay();
+}
+
+// =====================================================
+// SELECTIONNER UN PERSONNAGE
+// =====================================================
+
+async function selectCharacter(character) {
+
+    if (!playerId) {
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } = await supabaseClient
+        .from("players")
+        .update({
+            character_id: character.id,
+            ready: false
+        })
+        .eq("id", playerId);
+
+
+    if (error) {
+
+        console.error(
+            "Erreur sélection personnage :",
+            error
+        );
+
+        return;
+
+    }
+
+
+    selectedCharacterId =
+        character.id;
+
+
+    updateSelectedCharacterDisplay();
+
+    await loadPlayers();
+
+}
+
+// =====================================================
+// AFFICHER LE PERSONNAGE SELECTIONNE
+// =====================================================
+
+function updateSelectedCharacterDisplay() {
+
+    const box =
+        document.getElementById("selectedCharacter");
+
+
+    if (!selectedCharacterId) {
+
+        box.innerHTML =
+            `
+            <strong>Aucun personnage sélectionné</strong>
+            <span>Choisis un personnage pour cette partie.</span>
+            `;
+
+        return;
+
+    }
+
+
+    const buttons =
+        document.querySelectorAll(
+            ".character-option"
+        );
+
+
+    buttons.forEach(button => {
+
+        button.classList.remove(
+            "selected"
+        );
+
+    });
+
+
+    const selected =
+        document.querySelector(
+            ".character-option.selected"
+        );
+
+
+    if (!selected) {
+
+        // La sélection visuelle sera reconstruite
+        // par renderMyCharacters() si nécessaire.
+
+    }
+
+}
+
+    function getClassDisplayName(value) {
+
+    const names = {
+
+        eclaireur: "Éclaireur",
+        technicien: "Technicien",
+        ingenieur: "Ingénieur",
+        medecin: "Médecin",
+        tireur: "Tireur",
+        combattant: "Combattant",
+        scientifique: "Scientifique",
+        diplomate: "Diplomate",
+        commandant: "Commandant"
+
+    };
+
+
+    return names[value] || "Classe non définie";
+}
+    
     // =====================================================
     // CHARGER LA PARTIE
     // =====================================================
