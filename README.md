@@ -250,6 +250,8 @@
     
   </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
 <body>
   <!DOCTYPE html>
   <html lang="fr">
