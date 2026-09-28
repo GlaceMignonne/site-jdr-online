@@ -1470,17 +1470,26 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase.js"></script>
   
-  <script>
+ <script type="module">
   
   /* =========================================================
      CONFIGURATION
   ========================================================= */
   
- console.log(
-    "Supabase création personnage :",
-    supabaseClient
-);
-  
+ const {
+    data: { user }
+} = await supabaseClient.auth.getUser();
+
+if (!user) {
+
+    alert(
+        "Tu dois être connecté pour créer un personnage."
+    );
+
+    window.location.href = "index.html";
+
+}
+    
   /* =========================================================
      BONUS DE CLASSE
   ========================================================= */
