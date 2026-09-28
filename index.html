@@ -1206,6 +1206,475 @@
   
   
   <script>
+
+  /* =========================================================
+   IDENTITE JOUEUR / MJ
+========================================================= */
+
+let identityRole = null;
+
+
+/* =========================================================
+   GENERER L'EMAIL INTERNE SUPABASE
+========================================================= */
+
+async function usernameToAuthEmail(username) {
+
+    const normalized =
+        username
+            .trim()
+            .toLowerCase();
+
+    const encoded =
+        new TextEncoder().encode(normalized);
+
+    const hashBuffer =
+        await crypto.subtle.digest(
+            "SHA-256",
+            encoded
+        );
+
+    const hashArray =
+        Array.from(
+            new Uint8Array(hashBuffer)
+        );
+
+    const hash =
+        hashArray
+            .map(byte =>
+                byte.toString(16).padStart(2, "0")
+            )
+            .join("");
+
+    return "user_" + hash + "@jdr.local";
+}
+
+
+/* =========================================================
+   OUVRIR LE MODAL IDENTITE
+========================================================= */
+
+function openIdentityModal(role) {
+
+    identityRole = role;
+
+    const title =
+        document.getElementById("identityTitle");
+
+    const description =
+        document.getElementById("identityDescription");
+
+    const nameInput =
+        document.getElementById("identityName");
+
+    const pinInput =
+        document.getElementById("identityPin");
+
+    const result =
+        document.getElementById("identityResult");
+
+
+    nameInput.value = "";
+    pinInput.value = "";
+
+    result.className = "";
+    result.textContent = "";
+
+
+    if (role === "mj") {
+
+        title.textContent =
+            "Identité du maître du jeu";
+
+        description.textContent =
+            "Crée ton identité de maître du jeu ou connecte-toi à une identité existante.";
+
+    } else {
+
+        title.textContent =
+            "Identité du joueur";
+
+        description.textContent =
+            "Crée ton identité de joueur ou connecte-toi à une identité existante.";
+
+    }
+
+
+    document
+        .getElementById("identityModal")
+        .classList.add("active");
+
+
+    setTimeout(() => {
+        nameInput.focus();
+    }, 200);
+
+}
+
+
+/* =========================================================
+   CREER UNE IDENTITE
+========================================================= */
+
+async function createIdentity() {
+
+    const name =
+        document
+            .getElementById("identityName")
+            .value
+            .trim();
+
+    const pin =
+        document
+            .getElementById("identityPin")
+            .value
+            .trim();
+
+    const result =
+        document.getElementById("identityResult");
+
+
+    if (!name) {
+
+        result.className = "message error";
+        result.textContent =
+            "Entre un nom.";
+
+        return;
+    }
+
+
+    if (!/^\d{8}$/.test(pin)) {
+
+        result.className = "message error";
+        result.textContent =
+            "Le code PIN doit contenir exactement 8 chiffres.";
+
+        return;
+    }
+
+
+    try {
+
+        const email =
+            await usernameToAuthEmail(name);
+
+
+        const { data, error } =
+            await supabaseClient.auth.signUp({
+
+                email: email,
+
+                password: pin,
+
+                options: {
+
+                    data: {
+
+                        username: name,
+
+                        role: identityRole
+
+                    }
+
+                }
+
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Erreur création identité :",
+                error
+            );
+
+            result.className = "message error";
+
+            if (
+                error.message
+                    .toLowerCase()
+                    .includes("already registered")
+            ) {
+
+                result.textContent =
+                    "Ce nom existe déjà. Utilise « Me connecter ».";
+
+            } else {
+
+                result.textContent =
+                    "Impossible de créer cette identité.";
+
+            }
+
+            return;
+        }
+
+
+        if (!data.user) {
+
+            result.className = "message error";
+
+            result.textContent =
+                "L'identité n'a pas pu être créée.";
+
+            return;
+
+        }
+
+
+        localStorage.setItem(
+            "jdr_user_id",
+            data.user.id
+        );
+
+        localStorage.setItem(
+            "jdr_name",
+            name
+        );
+
+        localStorage.setItem(
+            "jdr_role",
+            identityRole
+        );
+
+
+        result.className = "message success";
+
+        result.innerHTML =
+            "Identité créée !<br><strong>" +
+            name +
+            "</strong>";
+
+
+        setTimeout(() => {
+
+            closeModal("identityModal");
+
+            if (identityRole === "mj") {
+
+                document.getElementById("gmName").value =
+                    name;
+
+                document.getElementById("gmName").readOnly =
+                    true;
+
+                openCreateModal();
+
+            } else {
+
+                document.getElementById("playerName").value =
+                    name;
+
+                document.getElementById("playerName").readOnly =
+                    true;
+
+                openJoinModal();
+
+            }
+
+        }, 800);
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        result.className = "message error";
+
+        result.textContent =
+            "Une erreur est survenue.";
+
+    }
+
+}
+
+
+/* =========================================================
+   SE CONNECTER
+========================================================= */
+
+async function loginIdentity() {
+
+    const name =
+        document
+            .getElementById("identityName")
+            .value
+            .trim();
+
+    const pin =
+        document
+            .getElementById("identityPin")
+            .value
+            .trim();
+
+    const result =
+        document.getElementById("identityResult");
+
+
+    if (!name) {
+
+        result.className = "message error";
+        result.textContent =
+            "Entre ton nom.";
+
+        return;
+    }
+
+
+    if (!/^\d{8}$/.test(pin)) {
+
+        result.className = "message error";
+        result.textContent =
+            "Le code PIN doit contenir exactement 8 chiffres.";
+
+        return;
+    }
+
+
+    try {
+
+        const email =
+            await usernameToAuthEmail(name);
+
+
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+
+                email: email,
+
+                password: pin
+
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Erreur connexion :",
+                error
+            );
+
+            result.className = "message error";
+
+            result.textContent =
+                "Nom ou code PIN incorrect.";
+
+            return;
+        }
+
+
+        const user =
+            data.user;
+
+
+        const { data: profile, error: profileError } =
+            await supabaseClient
+                .from("profiles")
+                .select("username, role")
+                .eq("id", user.id)
+                .single();
+
+
+        if (
+            profileError ||
+            !profile
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            result.className = "message error";
+
+            result.textContent =
+                "Profil introuvable.";
+
+            return;
+        }
+
+
+        if (profile.role !== identityRole) {
+
+            await supabaseClient.auth.signOut();
+
+            result.className = "message error";
+
+            result.textContent =
+                "Cette identité appartient à un " +
+                (
+                    profile.role === "mj"
+                        ? "MJ."
+                        : "joueur."
+                );
+
+            return;
+        }
+
+
+        localStorage.setItem(
+            "jdr_user_id",
+            user.id
+        );
+
+        localStorage.setItem(
+            "jdr_name",
+            profile.username
+        );
+
+        localStorage.setItem(
+            "jdr_role",
+            profile.role
+        );
+
+
+        result.className = "message success";
+
+        result.innerHTML =
+            "Connexion réussie !<br><strong>" +
+            profile.username +
+            "</strong>";
+
+
+        setTimeout(() => {
+
+            closeModal("identityModal");
+
+            if (identityRole === "mj") {
+
+                document.getElementById("gmName").value =
+                    profile.username;
+
+                document.getElementById("gmName").readOnly =
+                    true;
+
+                openCreateModal();
+
+            } else {
+
+                document.getElementById("playerName").value =
+                    profile.username;
+
+                document.getElementById("playerName").readOnly =
+                    true;
+
+                openJoinModal();
+
+            }
+
+        }, 800);
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        result.className = "message error";
+
+        result.textContent =
+            "Une erreur est survenue.";
+
+    }
+
+}
   
   /* =========================================================
      OUVRIR / FERMER LES MODALS
