@@ -1466,7 +1466,9 @@
   </div>
   
   </div>
-  
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
   
   <script>
   
@@ -1474,28 +1476,10 @@
      CONFIGURATION
   ========================================================= */
   
-  const MAIN_STATS = [
-      "Physique",
-      "Dextérité",
-      "Esprit",
-      "Survie",
-      "Armes"
-  ];
-  
-  const SECONDARY_STATS = [
-      "Force",
-      "Résistance",
-      "Furtivité",
-      "Agilité",
-      "Intelligence",
-      "Éloquence",
-      "Perception",
-      "Improvisation",
-      "Armes blanches",
-      "Armes contondantes",
-      "Armes à distance"
-  ];
-  
+ console.log(
+    "Supabase création personnage :",
+    supabaseClient
+);
   
   /* =========================================================
      BONUS DE CLASSE
