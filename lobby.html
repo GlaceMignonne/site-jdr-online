@@ -935,6 +935,19 @@ function updateSelectedCharacterDisplay() {
         playersList.innerHTML = "";
 
 
+        const me =
+            data.find(
+                player => player.id === playerId
+            );
+
+        if (me) {
+
+            selectedCharacterId =
+                me.character_id || null;
+
+        }
+
+
         data.forEach(player => {
 
 
