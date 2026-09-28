@@ -1469,16 +1469,15 @@
      CREER UNE PARTIE
   ========================================================= */
   
-  async function createGame() {
+ async function createGame() {
 
-    const name =
-        document
-            .getElementById("gmName")
-            .value
-            .trim();
+    const name = document
+        .getElementById("gmName")
+        .value
+        .trim();
 
-    const result =
-        document.getElementById("createResult");
+    const result = document
+        .getElementById("createResult");
 
     if (!name) {
 
@@ -1490,7 +1489,7 @@
         return;
     }
 
-    // Générer un code de partie
+    // Générer un code de 6 caractères
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
     let code = "";
@@ -1516,7 +1515,7 @@
 
     if (error) {
 
-        console.error(error);
+        console.error("Erreur Supabase :", error);
 
         result.className = "message error";
 
@@ -1526,12 +1525,12 @@
         return;
     }
 
-    // Sauvegarder les informations du MJ
+    // Sauvegarder les informations
     localStorage.setItem("jdr_role", "mj");
     localStorage.setItem("jdr_name", name);
     localStorage.setItem("jdr_party_code", data.code);
 
-    // Afficher le résultat
+    // Afficher le code
     result.className = "message success";
 
     result.innerHTML =
@@ -1541,54 +1540,6 @@
 
     console.log("Partie créée :", data);
 }
-  
-  
-      const code = generateGameCode();
-  
-  
-      result.innerHTML = `
-  
-          <div class="generated-code">
-  
-              <div class="generated-label">
-                  Code de ta partie
-              </div>
-  
-              <div class="generated-number">
-                  ${code}
-              </div>
-  
-          </div>
-  
-          <div class="message success">
-              Partie créée. Tu es le maître du jeu.
-          </div>
-  
-      `;
-  
-  
-      /*
-          POUR LE MOMENT :
-  
-          On stocke temporairement les informations
-          dans le navigateur.
-  
-          Plus tard, cette partie sera remplacée
-          par la connexion au serveur multiplayer.
-      */
-  
-      localStorage.setItem(
-          "jdr_current_game",
-          JSON.stringify({
-  
-              code: code,
-  
-              gm: name,
-  
-              createdAt: Date.now()
-  
-          })
-      );
   
   /* =========================================================
      REJOINDRE UNE PARTIE
