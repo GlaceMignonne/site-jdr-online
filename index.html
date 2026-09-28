@@ -947,8 +947,103 @@
   
   </div>
   
-  
-  
+  <!-- =========================================================
+     MODAL IDENTITE
+========================================================= -->
+
+<div
+    class="modal-overlay"
+    id="identityModal"
+    onclick="closeModalOutside(event, 'identityModal')"
+>
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div class="modal-title" id="identityTitle">
+                Identité
+            </div>
+
+            <button
+                class="close"
+                onclick="closeModal('identityModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <p class="modal-description" id="identityDescription">
+                Crée ou retrouve ton identité.
+            </p>
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Nom
+                </label>
+
+                <input
+                    id="identityName"
+                    class="input"
+                    type="text"
+                    placeholder="Ex : Thomas"
+                    maxlength="20"
+                    autocomplete="username"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Code PIN
+                </label>
+
+                <input
+                    id="identityPin"
+                    class="input"
+                    type="password"
+                    placeholder="8 chiffres"
+                    maxlength="8"
+                    inputmode="numeric"
+                    autocomplete="current-password"
+                >
+
+            </div>
+
+
+            <button
+                class="modal-button"
+                onclick="createIdentity()"
+            >
+                Créer mon identité
+            </button>
+
+            <div style="height: 10px;"></div>
+
+            <button
+                class="modal-button"
+                onclick="loginIdentity()"
+            >
+                Me connecter
+            </button>
+
+
+            <div id="identityResult"></div>
+
+        </div>
+
+    </div>
+
+</div> 
+    
   <!-- =========================================================
        MODAL CREATION
   ========================================================== -->
