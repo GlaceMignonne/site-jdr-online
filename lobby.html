@@ -13,5 +13,42 @@
 
     <p id="partyInfo">Chargement...</p>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+
+        async function loadParty() {
+
+            const code = localStorage.getItem("jdr_party_code");
+            const info = document.getElementById("partyInfo");
+
+            if (!code) {
+                info.textContent = "Aucune partie trouvée.";
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from("parties")
+                .select("code, mj_name, started")
+                .eq("code", code)
+                .single();
+
+            if (error) {
+                console.error("Erreur :", error);
+                info.textContent = "Impossible de charger la partie.";
+                return;
+            }
+
+            info.innerHTML =
+                "Code de la partie : <strong>" + data.code + "</strong><br>" +
+                "MJ : " + data.mj_name + "<br>" +
+                "Partie commencée : " + (data.started ? "Oui" : "Non");
+        }
+
+        loadParty();
+
+    </script>
+
 </body>
 </html>
