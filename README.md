@@ -1,2 +1,1669 @@
 # site-jdr-online
-projet trop ambitieux pour ma flemme légenbdaire
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>onHTML Project</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+    
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #080812;
+      color: #e4e4f2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative
+    }
+    
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: .15;
+      pointer-events: none;
+      animation: fl 9s ease-in-out infinite
+    }
+    
+    .orb-1 {
+      width: 350px;
+      height: 350px;
+      background: #7c6af7;
+      top: -100px;
+      left: -80px;
+      animation-delay: 0s
+    }
+    
+    .orb-2 {
+      width: 300px;
+      height: 300px;
+      background: #3ecf8e;
+      bottom: -80px;
+      right: -60px;
+      animation-delay: 3.5s
+    }
+    
+    .orb-3 {
+      width: 220px;
+      height: 220px;
+      background: #f06292;
+      top: 40%;
+      left: 45%;
+      transform: translate(-50%, -50%);
+      animation-delay: 6s
+    }
+    
+    @keyframes fl {
+    
+      0%,
+      100% {
+        transform: translateY(0) scale(1)
+      }
+    
+      50% {
+        transform: translateY(-22px) scale(1.07)
+      }
+    }
+    
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 22px;
+      padding: 38px 34px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .07);
+      animation: ci .7s cubic-bezier(.16, 1, .3, 1) both
+    }
+    
+    @keyframes ci {
+      from {
+        opacity: 0;
+        transform: translateY(22px) scale(.96)
+      }
+    
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+    
+    .brand {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      line-height: 1
+    }
+    
+    .b-on {
+      color: #7c6af7
+    }
+    
+    .b-html {
+      color: #fff
+    }
+    
+    .b-dot {
+      color: #8888aa;
+      font-size: 22px
+    }
+    
+    .sub {
+      color: #8888aa;
+      font-size: 13px;
+      margin-bottom: 26px;
+      letter-spacing: .2px
+    }
+    
+    .stats {
+      display: flex;
+      margin-bottom: 26px;
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 12px;
+      overflow: hidden
+    }
+    
+    .s {
+      flex: 1;
+      padding: 13px 6px;
+      border-right: 1px solid rgba(255, 255, 255, .07)
+    }
+    
+    .s:last-child {
+      border-right: none
+    }
+    
+    .n {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff
+    }
+    
+    .u {
+      font-size: 16px;
+      font-weight: 800;
+      color: #7c6af7
+    }
+    
+    .l {
+      display: block;
+      font-size: 10px;
+      color: #8888aa;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-top: 2px
+    }
+    
+    .pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 26px
+    }
+    
+    .pill {
+      background: rgba(124, 106, 247, .1);
+      border: 1px solid rgba(124, 106, 247, .22);
+      color: #a78bfa;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 20px;
+      transition: all .2s;
+      cursor: default
+    }
+    
+    .pill:hover {
+      background: rgba(124, 106, 247, .22);
+      border-color: rgba(124, 106, 247, .5);
+      transform: translateY(-1px)
+    }
+    
+    .btns {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+    
+    button {
+      padding: 11px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      background: linear-gradient(135deg, #7c6af7, #9882ff);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(124, 106, 247, .4);
+      transition: all .2s
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(124, 106, 247, .5)
+    }
+    
+    button:active {
+      transform: scale(.97)
+    }
+    
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      background: rgba(62, 207, 142, .1);
+      border: 1px solid rgba(62, 207, 142, .28);
+      color: #3ecf8e;
+      transition: all .2s
+    }
+    
+    .link-btn:hover {
+      background: rgba(62, 207, 142, .2);
+      border-color: rgba(62, 207, 142, .5);
+      transform: translateY(-2px)
+    }
+    
+  </style>
+</head>
+<body>
+  <!DOCTYPE html>
+  <html lang="fr">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>JDR — Accueil</title>
+  
+  <style>
+  
+  /* =========================================================
+     VARIABLES
+  ========================================================= */
+  
+  :root {
+      --bg: #101214;
+      --bg-dark: #0a0c0d;
+      --panel: #181b1e;
+      --panel-light: #202428;
+  
+      --text: #e7e7e7;
+      --text-muted: #8d9398;
+  
+      --red: #b83232;
+      --red-light: #d64a4a;
+      --red-dark: #7f2020;
+  
+      --border: #34383c;
+  
+      --shadow: rgba(0, 0, 0, 0.55);
+  }
+  
+  
+  /* =========================================================
+     RESET
+  ========================================================= */
+  
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  }
+  
+  html,
+  body {
+      width: 100%;
+      height: 100%;
+  }
+  
+  body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+          radial-gradient(circle at center, rgba(120,120,120,0.07), transparent 45%),
+          linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.75)),
+          var(--bg-dark);
+  
+      color: var(--text);
+  
+      overflow: hidden;
+  }
+  
+  
+  /* =========================================================
+     FOND
+  ========================================================= */
+  
+  .background {
+      position: fixed;
+      inset: 0;
+  
+      pointer-events: none;
+  
+      background:
+          linear-gradient(
+              90deg,
+              transparent 0%,
+              rgba(255,255,255,0.015) 50%,
+              transparent 100%
+          );
+  
+      opacity: 0.8;
+  }
+  
+  
+  /* texture légère */
+  
+  .background::before {
+      content: "";
+  
+      position: absolute;
+      inset: 0;
+  
+      background-image:
+          repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 3px,
+              rgba(255,255,255,0.012) 4px
+          );
+  
+      opacity: 0.4;
+  }
+  
+  
+  /* =========================================================
+     PAGE
+  ========================================================= */
+  
+  .home {
+      min-height: 100vh;
+  
+      display: flex;
+      flex-direction: column;
+  
+      position: relative;
+  }
+  
+  
+  /* =========================================================
+     BARRE DU HAUT
+  ========================================================= */
+  
+  .topbar {
+      height: 72px;
+  
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  
+      padding: 0 35px;
+  
+      border-bottom: 1px solid var(--border);
+  
+      background: rgba(10, 12, 13, 0.75);
+  
+      backdrop-filter: blur(8px);
+  }
+  
+  
+  /* logo */
+  
+  .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+  
+      font-weight: bold;
+      letter-spacing: 3px;
+  }
+  
+  .logo-mark {
+      width: 35px;
+      height: 35px;
+  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      border: 2px solid var(--red);
+  
+      color: var(--red-light);
+  
+      font-size: 17px;
+  
+      transform: rotate(45deg);
+  }
+  
+  .logo-mark span {
+      transform: rotate(-45deg);
+  }
+  
+  .logo-text {
+      font-size: 16px;
+  }
+  
+  
+  /* version */
+  
+  .version {
+      color: var(--text-muted);
+      font-size: 12px;
+      letter-spacing: 1px;
+  }
+  
+  
+  /* =========================================================
+     CONTENU CENTRAL
+  ========================================================= */
+  
+  .main {
+      flex: 1;
+  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      padding: 30px;
+  }
+  
+  
+  /* =========================================================
+     BLOC PRINCIPAL
+  ========================================================= */
+  
+  .hero {
+      width: min(700px, 100%);
+  
+      text-align: center;
+  
+      animation: appear 0.8s ease;
+  }
+  
+  
+  /* petit texte */
+  
+  .eyebrow {
+      color: var(--red-light);
+  
+      font-size: 12px;
+      font-weight: bold;
+  
+      letter-spacing: 5px;
+  
+      margin-bottom: 22px;
+  
+      text-transform: uppercase;
+  }
+  
+  
+  /* titre */
+  
+  .title {
+      font-size: clamp(48px, 9vw, 92px);
+  
+      font-weight: 900;
+  
+      letter-spacing: 8px;
+  
+      text-transform: uppercase;
+  
+      line-height: 0.95;
+  
+      text-shadow:
+          0 4px 20px rgba(0,0,0,0.8);
+  
+      margin-bottom: 25px;
+  }
+  
+  
+  /* ligne rouge */
+  
+  .title-line {
+      width: 90px;
+      height: 3px;
+  
+      background: var(--red);
+  
+      margin: 0 auto 25px;
+  
+      box-shadow:
+          0 0 12px rgba(184,50,50,0.5);
+  }
+  
+  
+  /* sous-titre */
+  
+  .subtitle {
+      max-width: 550px;
+  
+      margin: 0 auto;
+  
+      color: var(--text-muted);
+  
+      font-size: 15px;
+  
+      line-height: 1.7;
+  
+      margin-bottom: 45px;
+  }
+  
+  
+  /* =========================================================
+     BOUTONS
+  ========================================================= */
+  
+  .actions {
+      display: grid;
+  
+      grid-template-columns: repeat(2, 1fr);
+  
+      gap: 18px;
+  
+      width: 100%;
+  }
+  
+  
+  .button {
+      position: relative;
+  
+      height: 76px;
+  
+      border: 1px solid var(--border);
+  
+      background: var(--panel);
+  
+      color: var(--text);
+  
+      cursor: pointer;
+  
+      font-size: 14px;
+      font-weight: bold;
+  
+      letter-spacing: 2px;
+  
+      text-transform: uppercase;
+  
+      transition:
+          transform 0.2s ease,
+          background 0.2s ease,
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+  
+      overflow: hidden;
+  }
+  
+  
+  /* ligne rouge sur le côté */
+  
+  .button::before {
+      content: "";
+  
+      position: absolute;
+  
+      left: 0;
+      top: 0;
+      bottom: 0;
+  
+      width: 3px;
+  
+      background: var(--red);
+  
+      transform: scaleY(0);
+  
+      transition: transform 0.2s ease;
+  }
+  
+  
+  .button:hover {
+      transform: translateY(-3px);
+  
+      background: var(--panel-light);
+  
+      border-color: #555b60;
+  
+      box-shadow:
+          0 10px 30px rgba(0,0,0,0.35);
+  }
+  
+  
+  .button:hover::before {
+      transform: scaleY(1);
+  }
+  
+  
+  /* bouton principal */
+  
+  .button.primary {
+      background: var(--red-dark);
+  
+      border-color: var(--red);
+  
+      box-shadow:
+          0 5px 25px rgba(127,32,32,0.2);
+  }
+  
+  
+  .button.primary:hover {
+      background: var(--red);
+  
+      border-color: var(--red-light);
+  
+      box-shadow:
+          0 10px 35px rgba(184,50,50,0.25);
+  }
+  
+  
+  /* contenu bouton */
+  
+  .button-content {
+      position: relative;
+      z-index: 2;
+  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      gap: 12px;
+  }
+  
+  
+  /* icône */
+  
+  .button-icon {
+      font-size: 20px;
+  }
+  
+  
+  /* =========================================================
+     BAS DE PAGE
+  ========================================================= */
+  
+  .footer {
+      height: 50px;
+  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      color: #555b60;
+  
+      font-size: 11px;
+  
+      letter-spacing: 1px;
+  
+      border-top: 1px solid rgba(52,56,60,0.5);
+  }
+  
+  
+  /* =========================================================
+     MODAL
+  ========================================================= */
+  
+  .modal-overlay {
+      position: fixed;
+      inset: 0;
+  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      padding: 20px;
+  
+      background: rgba(0,0,0,0.78);
+  
+      backdrop-filter: blur(7px);
+  
+      opacity: 0;
+      visibility: hidden;
+  
+      transition:
+          opacity 0.25s ease,
+          visibility 0.25s ease;
+  
+      z-index: 100;
+  }
+  
+  
+  .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+  }
+  
+  
+  /* fenêtre */
+  
+  .modal {
+      width: min(430px, 100%);
+  
+      background: var(--panel);
+  
+      border: 1px solid var(--border);
+  
+      box-shadow:
+          0 30px 80px rgba(0,0,0,0.65);
+  
+      transform: translateY(20px) scale(0.97);
+  
+      transition: transform 0.25s ease;
+  }
+  
+  
+  .modal-overlay.active .modal {
+      transform: translateY(0) scale(1);
+  }
+  
+  
+  /* header */
+  
+  .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  
+      padding: 22px 25px;
+  
+      border-bottom: 1px solid var(--border);
+  }
+  
+  
+  .modal-title {
+      font-size: 17px;
+  
+      font-weight: bold;
+  
+      letter-spacing: 2px;
+  
+      text-transform: uppercase;
+  }
+  
+  
+  .close {
+      width: 30px;
+      height: 30px;
+  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      border: 0;
+  
+      background: transparent;
+  
+      color: var(--text-muted);
+  
+      font-size: 22px;
+  
+      cursor: pointer;
+  
+      transition: color 0.2s ease;
+  }
+  
+  
+  .close:hover {
+      color: white;
+  }
+  
+  
+  /* corps */
+  
+  .modal-body {
+      padding: 25px;
+  }
+  
+  
+  /* texte */
+  
+  .modal-description {
+      color: var(--text-muted);
+  
+      font-size: 13px;
+  
+      line-height: 1.6;
+  
+      margin-bottom: 22px;
+  }
+  
+  
+  /* champs */
+  
+  .form-group {
+      margin-bottom: 18px;
+  }
+  
+  
+  .form-label {
+      display: block;
+  
+      margin-bottom: 8px;
+  
+      color: #bfc3c6;
+  
+      font-size: 11px;
+  
+      font-weight: bold;
+  
+      letter-spacing: 1.5px;
+  
+      text-transform: uppercase;
+  }
+  
+  
+  .input {
+      width: 100%;
+  
+      height: 48px;
+  
+      padding: 0 14px;
+  
+      background: var(--bg-dark);
+  
+      border: 1px solid var(--border);
+  
+      outline: none;
+  
+      color: white;
+  
+      font-size: 14px;
+  
+      transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+  }
+  
+  
+  .input:focus {
+      border-color: var(--red);
+  
+      box-shadow:
+          0 0 0 2px rgba(184,50,50,0.12);
+  }
+  
+  
+  .input::placeholder {
+      color: #555b60;
+  }
+  
+  
+  /* code */
+  
+  .code-input {
+      text-align: center;
+  
+      font-size: 22px;
+  
+      font-weight: bold;
+  
+      letter-spacing: 7px;
+  
+      text-transform: uppercase;
+  }
+  
+  
+  /* bouton modal */
+  
+  .modal-button {
+      width: 100%;
+  
+      height: 50px;
+  
+      border: 1px solid var(--red);
+  
+      background: var(--red-dark);
+  
+      color: white;
+  
+      cursor: pointer;
+  
+      font-weight: bold;
+  
+      letter-spacing: 2px;
+  
+      text-transform: uppercase;
+  
+      transition:
+          background 0.2s ease,
+          transform 0.2s ease;
+  }
+  
+  
+  .modal-button:hover {
+      background: var(--red);
+  
+      transform: translateY(-1px);
+  }
+  
+  
+  /* message */
+  
+  .message {
+      margin-top: 15px;
+  
+      padding: 10px;
+  
+      text-align: center;
+  
+      font-size: 12px;
+  
+      display: none;
+  }
+  
+  
+  .message.error {
+      display: block;
+  
+      background: rgba(184,50,50,0.12);
+  
+      border: 1px solid rgba(184,50,50,0.35);
+  
+      color: #e97878;
+  }
+  
+  
+  .message.success {
+      display: block;
+  
+      background: rgba(70,130,80,0.12);
+  
+      border: 1px solid rgba(70,130,80,0.35);
+  
+      color: #8bd08f;
+  }
+  
+  
+  /* =========================================================
+     CODE DE PARTIE
+  ========================================================= */
+  
+  .generated-code {
+      margin: 25px 0;
+  
+      padding: 20px;
+  
+      text-align: center;
+  
+      background: var(--bg-dark);
+  
+      border: 1px dashed var(--red);
+  }
+  
+  
+  .generated-label {
+      color: var(--text-muted);
+  
+      font-size: 10px;
+  
+      letter-spacing: 2px;
+  
+      text-transform: uppercase;
+  
+      margin-bottom: 10px;
+  }
+  
+  
+  .generated-number {
+      color: var(--red-light);
+  
+      font-size: 35px;
+  
+      font-weight: bold;
+  
+      letter-spacing: 8px;
+  }
+  
+  
+  /* =========================================================
+     ANIMATION
+  ========================================================= */
+  
+  @keyframes appear {
+  
+      from {
+          opacity: 0;
+          transform: translateY(20px);
+      }
+  
+      to {
+          opacity: 1;
+          transform: translateY(0);
+      }
+  
+  }
+  
+  
+  /* =========================================================
+     MOBILE
+  ========================================================= */
+  
+  @media (max-width: 600px) {
+  
+      body {
+          overflow-y: auto;
+      }
+  
+      .topbar {
+          height: 60px;
+  
+          padding: 0 20px;
+      }
+  
+      .logo-text {
+          font-size: 13px;
+      }
+  
+      .version {
+          display: none;
+      }
+  
+      .main {
+          padding: 35px 20px;
+      }
+  
+      .title {
+          font-size: 48px;
+  
+          letter-spacing: 5px;
+      }
+  
+      .subtitle {
+          font-size: 13px;
+  
+          margin-bottom: 35px;
+      }
+  
+      .actions {
+          grid-template-columns: 1fr;
+      }
+  
+      .button {
+          height: 65px;
+      }
+  
+      .footer {
+          height: 45px;
+      }
+  
+  }
+  
+  </style>
+  </head>
+  
+  
+  <body>
+  
+  <div class="background"></div>
+  
+  
+  <div class="home">
+  
+      <!-- =====================================================
+           BARRE DU HAUT
+      ====================================================== -->
+  
+      <header class="topbar">
+  
+          <div class="logo">
+  
+              <div class="logo-mark">
+                  <span>☠</span>
+              </div>
+  
+              <div class="logo-text">
+                  JDR
+              </div>
+  
+          </div>
+  
+  
+          <div class="version">
+              VERSION 0.1
+          </div>
+  
+      </header>
+  
+  
+  
+      <!-- =====================================================
+           CONTENU
+      ====================================================== -->
+  
+      <main class="main">
+  
+          <section class="hero">
+  
+              <div class="eyebrow">
+                  Survivre. S'adapter. Continuer.
+              </div>
+  
+  
+              <h1 class="title">
+                  JDR
+              </h1>
+  
+  
+              <div class="title-line"></div>
+  
+  
+              <p class="subtitle">
+                  Le monde s'est effondré.
+                  Les ressources sont rares, les dangers nombreux,
+                  et chaque décision peut avoir des conséquences.
+                  Préparez-vous à écrire votre propre histoire.
+              </p>
+  
+  
+              <div class="actions">
+  
+                  <!-- CREER -->
+  
+                  <button
+                      class="button primary"
+                      onclick="openCreateModal()"
+                  >
+  
+                      <div class="button-content">
+  
+                          <span class="button-icon">
+                              ⚔
+                          </span>
+  
+                          <span>
+                              Créer une partie
+                          </span>
+  
+                      </div>
+  
+                  </button>
+  
+  
+                  <!-- REJOINDRE -->
+  
+                  <button
+                      class="button"
+                      onclick="openJoinModal()"
+                  >
+  
+                      <div class="button-content">
+  
+                          <span class="button-icon">
+                              ➜
+                          </span>
+  
+                          <span>
+                              Rejoindre
+                          </span>
+  
+                      </div>
+  
+                  </button>
+  
+              </div>
+  
+          </section>
+  
+      </main>
+  
+  
+  
+      <!-- =====================================================
+           FOOTER
+      ====================================================== -->
+  
+      <footer class="footer">
+  
+          SYSTÈME DE JEU — PROTOTYPE
+  
+      </footer>
+  
+  </div>
+  
+  
+  
+  <!-- =========================================================
+       MODAL CREATION
+  ========================================================== -->
+  
+  <div
+      class="modal-overlay"
+      id="createModal"
+      onclick="closeModalOutside(event, 'createModal')"
+  >
+  
+      <div class="modal">
+  
+          <div class="modal-header">
+  
+              <div class="modal-title">
+                  Créer une partie
+              </div>
+  
+              <button
+                  class="close"
+                  onclick="closeModal('createModal')"
+              >
+                  ×
+              </button>
+  
+          </div>
+  
+  
+          <div class="modal-body">
+  
+              <p class="modal-description">
+                  Crée ton salon de jeu. Tu deviendras automatiquement
+                  le maître du jeu et recevras un code à transmettre
+                  aux autres joueurs.
+              </p>
+  
+  
+              <div class="form-group">
+  
+                  <label class="form-label">
+                      Nom du maître du jeu
+                  </label>
+  
+                  <input
+                      id="gmName"
+                      class="input"
+                      type="text"
+                      placeholder="Ex : Max"
+                      maxlength="20"
+                  >
+  
+              </div>
+  
+  
+              <button
+                  class="modal-button"
+                  onclick="createGame()"
+              >
+                  Créer la partie
+              </button>
+  
+  
+              <div id="createResult"></div>
+  
+          </div>
+  
+      </div>
+  
+  </div>
+  
+  
+  
+  <!-- =========================================================
+       MODAL REJOINDRE
+  ========================================================== -->
+  
+  <div
+      class="modal-overlay"
+      id="joinModal"
+      onclick="closeModalOutside(event, 'joinModal')"
+  >
+  
+      <div class="modal">
+  
+          <div class="modal-header">
+  
+              <div class="modal-title">
+                  Rejoindre une partie
+              </div>
+  
+              <button
+                  class="close"
+                  onclick="closeModal('joinModal')"
+              >
+                  ×
+              </button>
+  
+          </div>
+  
+  
+          <div class="modal-body">
+  
+              <p class="modal-description">
+                  Entre le code fourni par le maître du jeu
+                  pour rejoindre son salon.
+              </p>
+  
+  
+              <div class="form-group">
+  
+                  <label class="form-label">
+                      Ton nom
+                  </label>
+  
+                  <input
+                      id="playerName"
+                      class="input"
+                      type="text"
+                      placeholder="Ex : Alex"
+                      maxlength="20"
+                  >
+  
+              </div>
+  
+  
+              <div class="form-group">
+  
+                  <label class="form-label">
+                      Code de partie
+                  </label>
+  
+                  <input
+                      id="gameCode"
+                      class="input code-input"
+                      type="text"
+                      placeholder="XXXXXX"
+                      maxlength="6"
+                      autocomplete="off"
+                  >
+  
+              </div>
+  
+  
+              <button
+                  class="modal-button"
+                  onclick="joinGame()"
+              >
+                  Rejoindre la partie
+              </button>
+  
+  
+              <div id="joinResult"></div>
+  
+          </div>
+  
+      </div>
+  
+  </div>
+  
+  
+  
+  <script>
+  
+  /* =========================================================
+     OUVRIR / FERMER LES MODALS
+  ========================================================= */
+  
+  function openCreateModal() {
+  
+      document
+          .getElementById("createModal")
+          .classList.add("active");
+  
+      setTimeout(() => {
+  
+          document
+              .getElementById("gmName")
+              .focus();
+  
+      }, 200);
+  
+  }
+  
+  
+  function openJoinModal() {
+  
+      document
+          .getElementById("joinModal")
+          .classList.add("active");
+  
+      setTimeout(() => {
+  
+          document
+              .getElementById("playerName")
+              .focus();
+  
+      }, 200);
+  
+  }
+  
+  
+  function closeModal(id) {
+  
+      document
+          .getElementById(id)
+          .classList.remove("active");
+  
+  }
+  
+  
+  function closeModalOutside(event, id) {
+  
+      if (event.target.id === id) {
+  
+          closeModal(id);
+  
+      }
+  
+  }
+  
+  
+  /* =========================================================
+     ESC POUR FERMER
+  ========================================================= */
+  
+  document.addEventListener("keydown", function(event) {
+  
+      if (event.key === "Escape") {
+  
+          closeModal("createModal");
+          closeModal("joinModal");
+  
+      }
+  
+  });
+  
+  
+  /* =========================================================
+     GENERATION CODE
+  ========================================================= */
+  
+  function generateGameCode() {
+  
+      const characters =
+          "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  
+      let code = "";
+  
+      for (let i = 0; i < 6; i++) {
+  
+          code += characters[
+              Math.floor(Math.random() * characters.length)
+          ];
+  
+      }
+  
+      return code;
+  
+  }
+  
+  
+  /* =========================================================
+     CREER UNE PARTIE
+  ========================================================= */
+  
+  function createGame() {
+  
+      const name =
+          document
+              .getElementById("gmName")
+              .value
+              .trim();
+  
+      const result =
+          document.getElementById("createResult");
+  
+  
+      if (!name) {
+  
+          result.className = "message error";
+  
+          result.textContent =
+              "Entre ton nom avant de créer la partie.";
+  
+          return;
+  
+      }
+  
+  
+      const code = generateGameCode();
+  
+  
+      result.innerHTML = `
+  
+          <div class="generated-code">
+  
+              <div class="generated-label">
+                  Code de ta partie
+              </div>
+  
+              <div class="generated-number">
+                  ${code}
+              </div>
+  
+          </div>
+  
+          <div class="message success">
+              Partie créée. Tu es le maître du jeu.
+          </div>
+  
+      `;
+  
+  
+      /*
+          POUR LE MOMENT :
+  
+          On stocke temporairement les informations
+          dans le navigateur.
+  
+          Plus tard, cette partie sera remplacée
+          par la connexion au serveur multiplayer.
+      */
+  
+      localStorage.setItem(
+          "jdr_current_game",
+          JSON.stringify({
+  
+              code: code,
+  
+              gm: name,
+  
+              createdAt: Date.now()
+  
+          })
+      );
+  
+  }
+  
+  
+  /* =========================================================
+     REJOINDRE UNE PARTIE
+  ========================================================= */
+  
+  function joinGame() {
+  
+      const name =
+          document
+              .getElementById("playerName")
+              .value
+              .trim();
+  
+      const code =
+          document
+              .getElementById("gameCode")
+              .value
+              .trim()
+              .toUpperCase();
+  
+      const result =
+          document.getElementById("joinResult");
+  
+  
+      if (!name) {
+  
+          result.className = "message error";
+  
+          result.textContent =
+              "Entre ton nom.";
+  
+          return;
+  
+      }
+  
+  
+      if (code.length !== 6) {
+  
+          result.className = "message error";
+  
+          result.textContent =
+              "Le code doit contenir 6 caractères.";
+  
+          return;
+  
+      }
+  
+  
+      /*
+          POUR LE MOMENT :
+  
+          On simule simplement la connexion.
+  
+          Le vrai système vérifiera le code
+          auprès du serveur.
+      */
+  
+      localStorage.setItem(
+          "jdr_current_player",
+          JSON.stringify({
+  
+              name: name,
+  
+              code: code,
+  
+              joinedAt: Date.now()
+  
+          })
+      );
+  
+  
+      result.className = "message success";
+  
+      result.textContent =
+          "Connexion à la partie en cours...";
+  
+  
+      /*
+          Plus tard :
+  
+          window.location.href = "lobby.html";
+      */
+  
+  }
+  
+  
+  /* =========================================================
+     CODE AUTOMATIQUEMENT EN MAJUSCULE
+  ========================================================= */
+  
+  document
+      .getElementById("gameCode")
+      .addEventListener("input", function() {
+  
+          this.value =
+              this.value
+                  .toUpperCase()
+                  .replace(/[^A-Z0-9]/g, "");
+  
+      });
+  
+  
+  </script>
+  
+  </body>
+  </html>
+  <script>
+    /* Counter animation */
+    document.querySelectorAll('.n[data-to]').forEach(el => {
+      const t = +el.dataset.to,
+        step = t / 45;
+      let c = 0;
+      const tm = setInterval(() => {
+        c = Math.min(c + step, t);
+        el.textContent = Math.floor(c);
+        if (c >= t) clearInterval(tm);
+      }, 25);
+    });
+    
+    function go() {
+      window.parent.document.querySelector('.tab-btn[data-tab="html"]')?.click();
+      window.parent.document.querySelector('.CodeMirror textarea')?.focus();
+    }
+    
+  </script>
+</body>
+</html>
