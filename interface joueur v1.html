@@ -1,0 +1,2395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>onHTML Project</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+    
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #080812;
+      color: #e4e4f2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative
+    }
+    
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: .15;
+      pointer-events: none;
+      animation: fl 9s ease-in-out infinite
+    }
+    
+    .orb-1 {
+      width: 350px;
+      height: 350px;
+      background: #7c6af7;
+      top: -100px;
+      left: -80px;
+      animation-delay: 0s
+    }
+    
+    .orb-2 {
+      width: 300px;
+      height: 300px;
+      background: #3ecf8e;
+      bottom: -80px;
+      right: -60px;
+      animation-delay: 3.5s
+    }
+    
+    .orb-3 {
+      width: 220px;
+      height: 220px;
+      background: #f06292;
+      top: 40%;
+      left: 45%;
+      transform: translate(-50%, -50%);
+      animation-delay: 6s
+    }
+    
+    @keyframes fl {
+    
+      0%,
+      100% {
+        transform: translateY(0) scale(1)
+      }
+    
+      50% {
+        transform: translateY(-22px) scale(1.07)
+      }
+    }
+    
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 22px;
+      padding: 38px 34px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .07);
+      animation: ci .7s cubic-bezier(.16, 1, .3, 1) both
+    }
+    
+    @keyframes ci {
+      from {
+        opacity: 0;
+        transform: translateY(22px) scale(.96)
+      }
+    
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+    
+    .brand {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      line-height: 1
+    }
+    
+    .b-on {
+      color: #7c6af7
+    }
+    
+    .b-html {
+      color: #fff
+    }
+    
+    .b-dot {
+      color: #8888aa;
+      font-size: 22px
+    }
+    
+    .sub {
+      color: #8888aa;
+      font-size: 13px;
+      margin-bottom: 26px;
+      letter-spacing: .2px
+    }
+    
+    .stats {
+      display: flex;
+      margin-bottom: 26px;
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 12px;
+      overflow: hidden
+    }
+    
+    .s {
+      flex: 1;
+      padding: 13px 6px;
+      border-right: 1px solid rgba(255, 255, 255, .07)
+    }
+    
+    .s:last-child {
+      border-right: none
+    }
+    
+    .n {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff
+    }
+    
+    .u {
+      font-size: 16px;
+      font-weight: 800;
+      color: #7c6af7
+    }
+    
+    .l {
+      display: block;
+      font-size: 10px;
+      color: #8888aa;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-top: 2px
+    }
+    
+    .pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 26px
+    }
+    
+    .pill {
+      background: rgba(124, 106, 247, .1);
+      border: 1px solid rgba(124, 106, 247, .22);
+      color: #a78bfa;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 20px;
+      transition: all .2s;
+      cursor: default
+    }
+    
+    .pill:hover {
+      background: rgba(124, 106, 247, .22);
+      border-color: rgba(124, 106, 247, .5);
+      transform: translateY(-1px)
+    }
+    
+    .btns {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+    
+    button {
+      padding: 11px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      background: linear-gradient(135deg, #7c6af7, #9882ff);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(124, 106, 247, .4);
+      transition: all .2s
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(124, 106, 247, .5)
+    }
+    
+    button:active {
+      transform: scale(.97)
+    }
+    
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      background: rgba(62, 207, 142, .1);
+      border: 1px solid rgba(62, 207, 142, .28);
+      color: #3ecf8e;
+      transition: all .2s
+    }
+    
+    .link-btn:hover {
+      background: rgba(62, 207, 142, .2);
+      border-color: rgba(62, 207, 142, .5);
+      transform: translateY(-2px)
+    }
+    
+  </style>
+</head>
+<body>
+  <!DOCTYPE html>
+  <html lang="fr">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JDR — Interface Joueur</title>
+  
+  <style>
+  :root {
+      --bg: #101214;
+      --panel: #181b1f;
+      --panel2: #20242a;
+      --border: #343a40;
+      --text: #e6e6e6;
+      --muted: #8d949b;
+      --accent: #b84a32;
+      --accent-hover: #d15b40;
+      --success: #65b86d;
+      --danger: #d65b4c;
+      --warning: #d49a43;
+      --black-heart: #111;
+  }
+  
+  * {
+      box-sizing: border-box;
+  }
+  
+  body {
+      margin: 0;
+      background:
+          radial-gradient(circle at top, #25292d 0%, #101214 55%);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+  }
+  
+  /* =========================================================
+     HEADER
+  ========================================================= */
+  
+  .topbar {
+      height: 72px;
+      background: #151719;
+      border-bottom: 1px solid var(--border);
+  
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  
+      padding: 0 22px;
+  
+      box-shadow: 0 3px 15px rgba(0,0,0,.4);
+  }
+  
+  .logo {
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: var(--accent);
+      font-size: 20px;
+  }
+  
+  .player-info {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+  }
+  
+  .character-name {
+      font-size: 20px;
+      font-weight: bold;
+  }
+  
+  .state-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+  }
+  
+  .state-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+  }
+  
+  .hearts {
+      display: flex;
+      gap: 4px;
+  }
+  
+  .heart {
+      font-size: 22px;
+      line-height: 1;
+  }
+  
+  .heart.healthy {
+      color: #d33b32;
+  }
+  
+  .heart.poison {
+      color: #e08a35;
+  }
+  
+  .heart.injured {
+      color: #050505;
+      text-shadow: 0 0 2px #777;
+  }
+  
+  .chance-box {
+      border-left: 1px solid var(--border);
+      padding-left: 22px;
+  }
+  
+  .chance-number {
+      font-size: 22px;
+      color: var(--warning);
+      font-weight: bold;
+  }
+  
+  /* =========================================================
+     MAIN
+  ========================================================= */
+  
+  .main-layout {
+      height: calc(100vh - 72px - 175px);
+  
+      display: grid;
+      grid-template-columns: 270px minmax(400px, 1fr) 290px;
+  
+      gap: 10px;
+      padding: 10px;
+  }
+  
+  /* =========================================================
+     PANELS
+  ========================================================= */
+  
+  .panel {
+      background: rgba(24, 27, 31, .96);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+  
+      box-shadow:
+          0 5px 20px rgba(0,0,0,.35);
+  
+      overflow: hidden;
+  }
+  
+  .panel-header {
+      padding: 12px 14px;
+  
+      background: #1d2024;
+      border-bottom: 1px solid var(--border);
+  
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+  
+      color: #c9cdd1;
+  }
+  
+  .panel-content {
+      padding: 12px;
+  }
+  
+  /* =========================================================
+     LEFT — DICE + STATS
+  ========================================================= */
+  
+  .left-panel {
+      overflow-y: auto;
+  }
+  
+  .console {
+      background: #0c0e10;
+      border: 1px solid #30343a;
+      border-radius: 5px;
+      padding: 10px;
+  
+      font-family: monospace;
+  }
+  
+  .console-line {
+      color: #9ba2a8;
+      margin-bottom: 7px;
+  }
+  
+  .console-command {
+      color: #70b7d9;
+  }
+  
+  .console-result {
+      color: #d7d7d7;
+      min-height: 20px;
+  }
+  
+  .console-result.success {
+      color: var(--success);
+  }
+  
+  .console-result.failure {
+      color: var(--danger);
+  }
+  
+  .console-result.critical-success {
+      color: #6de37a;
+      font-weight: bold;
+  }
+  
+  .console-result.critical-failure {
+      color: #ff4c3c;
+      font-weight: bold;
+  }
+  
+  /* =========================================================
+     DICE BUTTONS
+  ========================================================= */
+  
+  .dice-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+  }
+  
+  .dice-btn {
+      background: #272c31;
+      color: #ddd;
+  
+      border: 1px solid #41474e;
+      border-radius: 4px;
+  
+      padding: 8px 4px;
+  
+      cursor: pointer;
+      font-weight: bold;
+  }
+  
+  .dice-btn:hover {
+      background: #343a40;
+      border-color: var(--accent);
+  }
+  
+  /* =========================================================
+     STATS
+  ========================================================= */
+  
+  .section-title {
+      margin-top: 18px;
+      margin-bottom: 8px;
+  
+      font-size: 11px;
+      color: var(--muted);
+  
+      text-transform: uppercase;
+      letter-spacing: 1px;
+  }
+  
+  .stat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+  }
+  
+  .stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  
+      padding: 8px 9px;
+  
+      background: #20242a;
+      border: 1px solid #30353b;
+  
+      border-radius: 4px;
+  
+      cursor: pointer;
+      transition: .15s;
+  }
+  
+  .stat:hover {
+      border-color: #777;
+  }
+  
+  .stat.selected {
+      border-color: var(--accent);
+      background: rgba(184,74,50,.18);
+      box-shadow: inset 3px 0 0 var(--accent);
+  }
+  
+  .stat-name {
+      font-size: 12px;
+  }
+  
+  .stat-value {
+      color: #b8bec4;
+      font-weight: bold;
+  }
+  
+  .stat.selected .stat-value {
+      color: #fff;
+  }
+  
+  /* =========================================================
+     TALENTS
+  ========================================================= */
+  
+  .talent {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  
+      padding: 8px 9px;
+  
+      background: #20242a;
+      border: 1px solid #30353b;
+  
+      border-radius: 4px;
+  
+      cursor: pointer;
+  
+      margin-bottom: 5px;
+  }
+  
+  .talent:hover {
+      border-color: #777;
+  }
+  
+  .talent.selected {
+      border-color: var(--accent);
+      background: rgba(184,74,50,.18);
+      box-shadow: inset 3px 0 0 var(--accent);
+  }
+  
+  .talent-name {
+      font-size: 12px;
+  }
+  
+  .talent-value {
+      font-weight: bold;
+  }
+  
+  /* =========================================================
+     CENTER — MAP
+  ========================================================= */
+  
+  .map-panel {
+      position: relative;
+  
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .map-container {
+      position: relative;
+  
+      flex: 1;
+  
+      overflow: hidden;
+  
+      background-color: #121416;
+  
+      background-image:
+          linear-gradient(#30353a 1px, transparent 1px),
+          linear-gradient(90deg, #30353a 1px, transparent 1px);
+  
+      background-size: 40px 40px;
+  
+      min-height: 400px;
+  }
+  
+  .map-message {
+      position: absolute;
+  
+      top: 50%;
+      left: 50%;
+  
+      transform: translate(-50%, -50%);
+  
+      color: #666d73;
+  
+      text-align: center;
+  
+      pointer-events: none;
+  
+      font-size: 14px;
+  }
+  
+  .map-image {
+      position: absolute;
+  
+      max-width: none;
+  
+      display: none;
+  
+      transform-origin: center center;
+  
+      user-select: none;
+      pointer-events: none;
+  }
+  
+  /* =========================================================
+     RIGHT — PLAYERS
+  ========================================================= */
+  
+  .right-panel {
+      overflow-y: auto;
+  }
+  
+  .player-card {
+      background: #20242a;
+  
+      border: 1px solid #30353b;
+  
+      border-radius: 5px;
+  
+      padding: 10px;
+  
+      margin-bottom: 8px;
+  }
+  
+  .player-card.self {
+      border-color: #625047;
+  }
+  
+  .player-name {
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 6px;
+  }
+  
+  .player-hearts {
+      margin-bottom: 6px;
+  }
+  
+  .player-chance {
+      font-size: 11px;
+      color: var(--muted);
+  }
+  
+  .player-chance span {
+      color: var(--warning);
+      font-weight: bold;
+  }
+  
+  /* =========================================================
+     INVENTORY
+  ========================================================= */
+  
+  .inventory-item {
+      padding: 8px;
+  
+      background: #20242a;
+  
+      border: 1px solid #30353b;
+  
+      border-radius: 4px;
+  
+      margin-bottom: 5px;
+  
+      font-size: 12px;
+  }
+  
+  .empty-inventory {
+      color: var(--muted);
+      font-size: 12px;
+  }
+  
+  /* =========================================================
+     CHARACTER BUTTON
+  ========================================================= */
+  
+  .sheet-button {
+      width: 100%;
+  
+      margin-top: 12px;
+  
+      padding: 11px;
+  
+      background: var(--accent);
+  
+      color: white;
+  
+      border: none;
+      border-radius: 4px;
+  
+      cursor: pointer;
+  
+      font-weight: bold;
+  }
+  
+  .sheet-button:hover {
+      background: var(--accent-hover);
+  }
+  
+  /* =========================================================
+     ACTION INFO
+  ========================================================= */
+  
+  .action-summary {
+      margin-top: 10px;
+  
+      padding: 10px;
+  
+      background: #0f1113;
+  
+      border: 1px solid #30353a;
+  
+      border-radius: 4px;
+  
+      font-size: 11px;
+  
+      color: var(--muted);
+  }
+  
+  .action-summary strong {
+      color: white;
+  }
+  
+  /* =========================================================
+     CHAT
+  ========================================================= */
+  
+  .chat {
+      position: fixed;
+  
+      bottom: 0;
+      left: 0;
+      right: 0;
+  
+      height: 175px;
+  
+      background: #151719;
+  
+      border-top: 1px solid var(--border);
+  
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .chat-header {
+      height: 34px;
+  
+      padding: 9px 14px;
+  
+      background: #1d2024;
+  
+      border-bottom: 1px solid var(--border);
+  
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+  }
+  
+  .messages {
+      flex: 1;
+  
+      overflow-y: auto;
+  
+      padding: 8px 14px;
+  
+      font-size: 12px;
+  }
+  
+  .message {
+      margin-bottom: 6px;
+  }
+  
+  .message-name {
+      color: var(--accent);
+      font-weight: bold;
+  }
+  
+  .chat-input {
+      display: flex;
+  
+      padding: 8px;
+  
+      border-top: 1px solid var(--border);
+  
+      gap: 6px;
+  }
+  
+  .chat-input input {
+      flex: 1;
+  
+      background: #20242a;
+  
+      color: white;
+  
+      border: 1px solid #3a4047;
+  
+      border-radius: 4px;
+  
+      padding: 9px;
+  }
+  
+  .chat-input button {
+      background: var(--accent);
+  
+      color: white;
+  
+      border: none;
+  
+      border-radius: 4px;
+  
+      padding: 0 18px;
+  
+      cursor: pointer;
+  
+      font-weight: bold;
+  }
+  
+  .chat-input button:hover {
+      background: var(--accent-hover);
+  }
+  
+  /* =========================================================
+     MODAL — FICHE
+  ========================================================= */
+  
+  .modal {
+      position: fixed;
+  
+      inset: 0;
+  
+      background: rgba(0,0,0,.75);
+  
+      display: none;
+  
+      align-items: center;
+      justify-content: center;
+  
+      z-index: 1000;
+  
+      padding: 20px;
+  }
+  
+  .modal.active {
+      display: flex;
+  }
+  
+  .sheet-modal {
+      width: min(900px, 100%);
+  
+      max-height: 90vh;
+  
+      overflow-y: auto;
+  
+      background: #181b1f;
+  
+      border: 1px solid #41474e;
+  
+      border-radius: 7px;
+  
+      box-shadow: 0 15px 50px rgba(0,0,0,.7);
+  }
+  
+  .modal-header {
+      display: flex;
+  
+      justify-content: space-between;
+      align-items: center;
+  
+      padding: 16px;
+  
+      border-bottom: 1px solid var(--border);
+  }
+  
+  .modal-header h2 {
+      margin: 0;
+  
+      color: var(--accent);
+  }
+  
+  .close-btn {
+      background: none;
+  
+      color: #aaa;
+  
+      border: none;
+  
+      font-size: 25px;
+  
+      cursor: pointer;
+  }
+  
+  .sheet-content {
+      padding: 20px;
+  }
+  
+  .sheet-grid {
+      display: grid;
+  
+      grid-template-columns: 220px 1fr;
+  
+      gap: 20px;
+  }
+  
+  .sheet-portrait {
+      width: 100%;
+      aspect-ratio: 1;
+  
+      background: #101214;
+  
+      border: 1px solid var(--border);
+  
+      border-radius: 5px;
+  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      color: #555;
+  }
+  
+  .sheet-section {
+      margin-bottom: 20px;
+  }
+  
+  .sheet-section h3 {
+      font-size: 12px;
+  
+      color: var(--muted);
+  
+      text-transform: uppercase;
+  
+      border-bottom: 1px solid var(--border);
+  
+      padding-bottom: 6px;
+  }
+  
+  .sheet-stats {
+      display: grid;
+  
+      grid-template-columns: repeat(2, 1fr);
+  
+      gap: 6px;
+  }
+  
+  .sheet-stat {
+      display: flex;
+      justify-content: space-between;
+  
+      background: #20242a;
+  
+      padding: 8px;
+  
+      border-radius: 4px;
+  
+      font-size: 12px;
+  }
+  
+  /* =========================================================
+     RESPONSIVE
+  ========================================================= */
+  
+  @media (max-width: 1000px) {
+  
+      body {
+          overflow: auto;
+      }
+  
+      .main-layout {
+          height: auto;
+  
+          grid-template-columns: 1fr;
+  
+          padding-bottom: 190px;
+      }
+  
+      .left-panel,
+      .right-panel {
+          max-height: none;
+      }
+  
+      .map-container {
+          min-height: 500px;
+      }
+  
+      .chat {
+          position: fixed;
+      }
+  }
+  
+  @media (max-width: 600px) {
+  
+      .topbar {
+          height: auto;
+  
+          padding: 12px;
+  
+          flex-direction: column;
+  
+          align-items: flex-start;
+  
+          gap: 10px;
+      }
+  
+      .player-info {
+          width: 100%;
+  
+          justify-content: space-between;
+  
+          gap: 10px;
+      }
+  
+      .character-name {
+          font-size: 16px;
+      }
+  
+      .chance-box {
+          padding-left: 10px;
+      }
+  
+      .sheet-grid {
+          grid-template-columns: 1fr;
+      }
+  }
+  </style>
+  </head>
+  
+  <body>
+  
+  <!-- =======================================================
+       HEADER
+  ======================================================= -->
+  
+  <header class="topbar">
+  
+      <div class="logo">
+          JDR // SURVIVAL
+      </div>
+  
+      <div class="player-info">
+  
+          <div class="character-name" id="characterName">
+              Kael
+          </div>
+  
+          <div class="state-box">
+  
+              <div class="state-label">
+                  État
+              </div>
+  
+              <div class="hearts" id="myHearts"></div>
+  
+          </div>
+  
+          <div class="chance-box">
+  
+              <div class="state-label">
+                  Chance
+              </div>
+  
+              <div class="chance-number" id="myChance">
+                  4
+              </div>
+  
+          </div>
+  
+      </div>
+  
+  </header>
+  
+  
+  <!-- =======================================================
+       MAIN
+  ======================================================= -->
+  
+  <main class="main-layout">
+  
+      <!-- ===================================================
+           LEFT
+      ==================================================== -->
+  
+      <aside class="panel left-panel">
+  
+          <div class="panel-header">
+              Console
+          </div>
+  
+          <div class="panel-content">
+  
+              <div class="console">
+  
+                  <div class="console-line">
+                      &gt; <span class="console-command" id="lastCommand">En attente...</span>
+                  </div>
+  
+                  <div class="console-line">
+                      &gt; <span class="console-result" id="diceResult">
+                          Aucun résultat
+                      </span>
+                  </div>
+  
+              </div>
+  
+  
+              <div class="dice-buttons">
+  
+                  <button class="dice-btn" onclick="rollDice(6)">
+                      D6
+                  </button>
+  
+                  <button class="dice-btn" onclick="rollDice(20)">
+                      D20
+                  </button>
+  
+                  <button class="dice-btn" onclick="rollDice(100)">
+                      D100
+                  </button>
+  
+              </div>
+  
+  
+              <!-- STATS -->
+  
+              <div class="section-title">
+                  Caractéristiques
+              </div>
+  
+              <div class="stat-list" id="statList"></div>
+  
+  
+              <!-- TALENTS -->
+  
+              <div class="section-title">
+                  Talents
+              </div>
+  
+              <div id="talentList"></div>
+  
+  
+              <!-- CALCUL -->
+  
+              <div class="action-summary">
+  
+                  <div>
+                      Cible actuelle :
+                      <strong id="targetValue">0</strong>
+                  </div>
+  
+                  <div style="margin-top:5px;">
+                      Sélection :
+                      <span id="selectedSummary">
+                          aucune
+                      </span>
+                  </div>
+  
+              </div>
+  
+          </div>
+  
+      </aside>
+  
+  
+      <!-- ===================================================
+           CENTER MAP
+      ==================================================== -->
+  
+      <section class="panel map-panel">
+  
+          <div class="panel-header">
+              Carte actuelle
+          </div>
+  
+          <div class="map-container" id="mapContainer">
+  
+              <div class="map-message" id="mapMessage">
+  
+                  Aucune carte chargée.<br>
+                  <span style="font-size:11px;">
+                      En attente du MJ...
+                  </span>
+  
+              </div>
+  
+              <img
+                  id="mapImage"
+                  class="map-image"
+                  alt="Carte du jeu"
+              >
+  
+          </div>
+  
+      </section>
+  
+  
+      <!-- ===================================================
+           RIGHT
+      ==================================================== -->
+  
+      <aside class="panel right-panel">
+  
+          <div class="panel-header">
+              Joueurs
+          </div>
+  
+          <div class="panel-content">
+  
+              <div id="playersList"></div>
+  
+  
+              <div class="section-title">
+                  Mon inventaire
+              </div>
+  
+              <div id="inventoryList"></div>
+  
+  
+              <button
+                  class="sheet-button"
+                  onclick="openCharacterSheet()"
+              >
+                  Ouvrir ma fiche
+              </button>
+  
+          </div>
+  
+      </aside>
+  
+  </main>
+  
+  
+  <!-- =======================================================
+       CHAT
+  ======================================================= -->
+  
+  <section class="chat">
+  
+      <div class="chat-header">
+          Discussion
+      </div>
+  
+      <div class="messages" id="messages">
+  
+          <div class="message">
+              <span class="message-name">MJ :</span>
+              Vous voyez un bâtiment au nord.
+          </div>
+  
+          <div class="message">
+              <span class="message-name">Rook :</span>
+              Je vais vérifier l'entrée.
+          </div>
+  
+      </div>
+  
+      <div class="chat-input">
+  
+          <input
+              type="text"
+              id="chatInput"
+              placeholder="Écrire un message..."
+              onkeydown="handleChatKey(event)"
+          >
+  
+          <button onclick="sendMessage()">
+              Envoyer
+          </button>
+  
+      </div>
+  
+  </section>
+  
+  
+  <!-- =======================================================
+       CHARACTER SHEET MODAL
+  ======================================================= -->
+  
+  <div class="modal" id="sheetModal">
+  
+      <div class="sheet-modal">
+  
+          <div class="modal-header">
+  
+              <h2>Ma fiche de personnage</h2>
+  
+              <button
+                  class="close-btn"
+                  onclick="closeCharacterSheet()"
+              >
+                  ×
+              </button>
+  
+          </div>
+  
+          <div class="sheet-content">
+  
+              <div class="sheet-grid">
+  
+                  <div>
+  
+                      <div class="sheet-portrait">
+                          PORTRAIT
+                      </div>
+  
+                  </div>
+  
+                  <div>
+  
+                      <div class="sheet-section">
+  
+                          <h3>Identité</h3>
+  
+                          <div class="sheet-stats">
+  
+                              <div class="sheet-stat">
+                                  <span>Nom</span>
+                                  <strong id="sheetName">Kael</strong>
+                              </div>
+  
+                              <div class="sheet-stat">
+                                  <span>Âge</span>
+                                  <strong id="sheetAge">29 ans</strong>
+                              </div>
+  
+                              <div class="sheet-stat">
+                                  <span>Classe</span>
+                                  <strong id="sheetClass">Éclaireur</strong>
+                              </div>
+  
+                              <div class="sheet-stat">
+                                  <span>Chance</span>
+                                  <strong id="sheetChance">4</strong>
+                              </div>
+  
+                          </div>
+  
+                      </div>
+  
+  
+                      <div class="sheet-section">
+  
+                          <h3>Caractéristiques</h3>
+  
+                          <div
+                              class="sheet-stats"
+                              id="sheetMainStats"
+                          ></div>
+  
+                      </div>
+  
+  
+                      <div class="sheet-section">
+  
+                          <h3>Secondaires</h3>
+  
+                          <div
+                              class="sheet-stats"
+                              id="sheetSecondaryStats"
+                          ></div>
+  
+                      </div>
+  
+  
+                      <div class="sheet-section">
+  
+                          <h3>Talents</h3>
+  
+                          <div
+                              class="sheet-stats"
+                              id="sheetTalents"
+                          ></div>
+  
+                      </div>
+  
+  
+                      <div class="sheet-section">
+  
+                          <h3>Équipement</h3>
+  
+                          <div id="sheetEquipment">
+                              Couteau, bandages, lampe torche
+                          </div>
+  
+                      </div>
+  
+  
+                      <div class="sheet-section">
+  
+                          <h3>Histoire</h3>
+  
+                          <div id="sheetLore">
+                              Ancien éclaireur d'une petite communauté
+                              installée dans les ruines de la ville.
+                          </div>
+  
+                      </div>
+  
+                  </div>
+  
+              </div>
+  
+          </div>
+  
+      </div>
+  
+  </div>
+  
+  
+  <script>
+  
+  /* =========================================================
+     DONNÉES DU JOUEUR
+     Prototype local uniquement
+  ========================================================= */
+  
+  const player = {
+  
+      name: "Kael",
+  
+      age: 29,
+  
+      class: "Éclaireur",
+  
+      chance: 4,
+  
+      hearts: [
+          "healthy",
+          "healthy",
+          "poison",
+          "healthy"
+      ],
+  
+      mainStats: {
+  
+          "Physique": 7,
+          "Dextérité": 9,
+          "Esprit": 6,
+          "Survie": 10,
+          "Armes": 8
+  
+      },
+  
+      secondaryStats: {
+  
+          "Force": 4,
+          "Résistance": 5,
+          "Furtivité": 6,
+          "Agilité": 8,
+          "Intelligence": 5,
+          "Éloquence": 2,
+          "Perception": 8,
+          "Improvisation": 4,
+          "Armes blanches": 5,
+          "Armes contondantes": 2,
+          "Armes à distance": 6
+  
+      },
+  
+      talents: {
+  
+          "Survie": 2,
+          "Repérage": 2
+  
+      },
+  
+      equipment: [
+  
+          "Couteau",
+          "Bandages",
+          "Lampe torche",
+          "Bouteille d'eau"
+  
+      ],
+  
+      lore:
+          "Ancien éclaireur d'une petite communauté " +
+          "installée dans les ruines de la ville.",
+  
+      isLeader: false
+  
+  };
+  
+  
+  /* =========================================================
+     AUTRES JOUEURS
+  ========================================================= */
+  
+  const otherPlayers = [
+  
+      {
+          name: "Rook",
+          hearts: [
+              "healthy",
+              "injured",
+              "healthy",
+              "poison"
+          ],
+          chance: 3
+      },
+  
+      {
+          name: "Mira",
+          hearts: [
+              "healthy",
+              "healthy",
+              "injured",
+              "healthy"
+          ],
+          chance: 6
+      },
+  
+      {
+          name: "Nox",
+          hearts: [
+              "healthy",
+              "healthy",
+              "healthy",
+              "healthy"
+          ],
+          chance: 2
+      }
+  
+  ];
+  
+  
+  /* =========================================================
+     INITIALISATION
+  ========================================================= */
+  
+  document.addEventListener("DOMContentLoaded", () => {
+  
+      renderMyHearts();
+  
+      renderStats();
+  
+      renderTalents();
+  
+      renderPlayers();
+  
+      renderInventory();
+  
+      renderSheet();
+  
+      updateTarget();
+  
+  });
+  
+  
+  /* =========================================================
+     COEURS
+  ========================================================= */
+  
+  function renderHearts(hearts) {
+  
+      return hearts.map(state => {
+  
+          let symbol = "♥";
+  
+          return `
+              <span class="heart ${state}">
+                  ${symbol}
+              </span>
+          `;
+  
+      }).join("");
+  
+  }
+  
+  
+  function renderMyHearts() {
+  
+      document.getElementById("myHearts").innerHTML =
+          renderHearts(player.hearts);
+  
+  }
+  
+  
+  /* =========================================================
+     STATS
+  ========================================================= */
+  
+  function renderStats() {
+  
+      const container =
+          document.getElementById("statList");
+  
+      container.innerHTML = "";
+  
+      Object.entries(player.mainStats).forEach(
+          ([name, value]) => {
+  
+              const div = document.createElement("div");
+  
+              div.className = "stat";
+  
+              div.dataset.type = "main";
+              div.dataset.name = name;
+              div.dataset.value = value;
+  
+              div.innerHTML = `
+                  <span class="stat-name">
+                      ${name}
+                  </span>
+  
+                  <span class="stat-value">
+                      ${value}
+                  </span>
+              `;
+  
+              div.addEventListener("click", () => {
+  
+                  div.classList.toggle("selected");
+  
+                  updateTarget();
+  
+              });
+  
+              container.appendChild(div);
+  
+          }
+      );
+  
+  
+      /* SECONDARY */
+  
+      const secondaryTitle =
+          document.createElement("div");
+  
+      secondaryTitle.className = "section-title";
+  
+      secondaryTitle.innerText =
+          "Caractéristiques secondaires";
+  
+      container.parentElement.appendChild(
+          secondaryTitle
+      );
+  
+  
+      Object.entries(player.secondaryStats).forEach(
+          ([name, value]) => {
+  
+              const div = document.createElement("div");
+  
+              div.className = "stat";
+  
+              div.dataset.type = "secondary";
+              div.dataset.name = name;
+              div.dataset.value = value;
+  
+              div.innerHTML = `
+                  <span class="stat-name">
+                      ${name}
+                  </span>
+  
+                  <span class="stat-value">
+                      ${value}
+                  </span>
+              `;
+  
+              div.addEventListener("click", () => {
+  
+                  div.classList.toggle("selected");
+  
+                  updateTarget();
+  
+              });
+  
+              container.appendChild(div);
+  
+          }
+      );
+  
+  }
+  
+  
+  /* =========================================================
+     TALENTS
+  ========================================================= */
+  
+  function renderTalents() {
+  
+      const container =
+          document.getElementById("talentList");
+  
+      container.innerHTML = "";
+  
+      Object.entries(player.talents).forEach(
+          ([name, value]) => {
+  
+              const div =
+                  document.createElement("div");
+  
+              div.className = "talent";
+  
+              div.dataset.name = name;
+              div.dataset.value = value;
+  
+              div.innerHTML = `
+                  <span class="talent-name">
+                      ${name}
+                  </span>
+  
+                  <span class="talent-value">
+                      ${value}
+                  </span>
+              `;
+  
+              div.addEventListener("click", () => {
+  
+                  div.classList.toggle("selected");
+  
+                  updateTarget();
+  
+              });
+  
+              container.appendChild(div);
+  
+          }
+      );
+  
+  }
+  
+  
+  /* =========================================================
+     BONUS DE CLASSE
+  ========================================================= */
+  
+  function getClassBonus() {
+  
+      let bonus = 0;
+  
+      switch (player.class) {
+  
+          case "Éclaireur":
+              bonus += 2;
+              break;
+  
+          case "Technicien":
+              bonus += 2;
+              break;
+  
+          case "Ingénieur":
+              bonus += 2;
+              break;
+  
+          case "Tireur":
+              bonus += 3;
+              break;
+  
+          case "Combattant":
+              bonus += 2;
+              break;
+  
+          case "Scientifique":
+              bonus += 1;
+              break;
+  
+          case "Diplomate":
+              bonus += 3;
+              break;
+  
+          case "Commandant":
+  
+              if (player.isLeader) {
+  
+                  bonus += otherPlayers.length + 1;
+  
+              }
+  
+              break;
+  
+      }
+  
+      return bonus;
+  
+  }
+  
+  
+  /* =========================================================
+     CALCUL CIBLE
+  ========================================================= */
+  
+  function updateTarget() {
+  
+      let target = 0;
+  
+      const selected = [];
+  
+      document
+          .querySelectorAll(".stat.selected")
+          .forEach(element => {
+  
+              const value =
+                  Number(element.dataset.value);
+  
+              target += value;
+  
+              selected.push(
+                  `${element.dataset.name} (${value})`
+              );
+  
+          });
+  
+  
+      document
+          .querySelectorAll(".talent.selected")
+          .forEach(element => {
+  
+              const value =
+                  Number(element.dataset.value);
+  
+              target += value;
+  
+              selected.push(
+                  `${element.dataset.name} (${value})`
+              );
+  
+          });
+  
+  
+      const classBonus = getClassBonus();
+  
+      if (classBonus > 0) {
+  
+          target += classBonus;
+  
+          selected.push(
+              `Bonus de classe (+${classBonus})`
+          );
+  
+      }
+  
+  
+      document.getElementById("targetValue")
+          .innerText = target;
+  
+  
+      document.getElementById("selectedSummary")
+          .innerText =
+          selected.length
+              ? selected.join(" + ")
+              : "aucune";
+  
+  }
+  
+  
+  /* =========================================================
+     DÉS
+  ========================================================= */
+  
+  function rollDice(sides) {
+  
+      const result =
+          Math.floor(Math.random() * sides) + 1;
+  
+      const command =
+          `rolld${sides}`;
+  
+      document.getElementById("lastCommand")
+          .innerText = command;
+  
+  
+      const resultElement =
+          document.getElementById("diceResult");
+  
+  
+      resultElement.className =
+          "console-result";
+  
+  
+      /*
+         D20 = jet d'action
+      */
+  
+      if (sides === 20) {
+  
+          resolveD20(result, resultElement);
+  
+      } else {
+  
+          resultElement.innerText =
+              `Résultat : ${result}`;
+  
+      }
+  
+  }
+  
+  
+  /* =========================================================
+     RÉSOLUTION D20
+  ========================================================= */
+  
+  function resolveD20(result, element) {
+  
+      const target =
+          Number(
+              document.getElementById("targetValue").innerText
+          );
+  
+  
+      /*
+         1 = critique
+      */
+  
+      if (result === 1) {
+  
+          element.className =
+              "console-result critical-success";
+  
+          element.innerText =
+              "CRITIQUE — 1 🎯";
+  
+          return;
+      }
+  
+  
+      /*
+         20 = échec critique
+      */
+  
+      if (result === 20) {
+  
+          element.className =
+              "console-result critical-failure";
+  
+          element.innerText =
+              "ÉCHEC CRITIQUE — 20 ☠";
+  
+          return;
+      }
+  
+  
+      /*
+         Succès
+      */
+  
+      if (result <= target) {
+  
+          element.className =
+              "console-result success";
+  
+          element.innerText =
+              `Réussite — ${result} / ${target}`;
+  
+      }
+  
+      /*
+         Échec
+      */
+  
+      else {
+  
+          element.className =
+              "console-result failure";
+  
+          element.innerText =
+              `Échec — ${result} / ${target}`;
+  
+      }
+  
+  }
+  
+  
+  /* =========================================================
+     JOUEURS
+  ========================================================= */
+  
+  function renderPlayers() {
+  
+      const container =
+          document.getElementById("playersList");
+  
+      container.innerHTML = "";
+  
+  
+      /*
+         Le joueur lui-même
+      */
+  
+      const self = document.createElement("div");
+  
+      self.className =
+          "player-card self";
+  
+      self.innerHTML = `
+  
+          <div class="player-name">
+              ${player.name} — Vous
+          </div>
+  
+          <div class="player-hearts">
+              ${renderHearts(player.hearts)}
+          </div>
+  
+          <div class="player-chance">
+              Chance :
+              <span>${player.chance}</span>
+          </div>
+  
+      `;
+  
+      container.appendChild(self);
+  
+  
+      /*
+         Autres joueurs
+      */
+  
+      otherPlayers.forEach(p => {
+  
+          const card =
+              document.createElement("div");
+  
+          card.className =
+              "player-card";
+  
+          card.innerHTML = `
+  
+              <div class="player-name">
+                  ${p.name}
+              </div>
+  
+              <div class="player-hearts">
+                  ${renderHearts(p.hearts)}
+              </div>
+  
+              <div class="player-chance">
+                  Chance :
+                  <span>${p.chance}</span>
+              </div>
+  
+          `;
+  
+          container.appendChild(card);
+  
+      });
+  
+  }
+  
+  
+  /* =========================================================
+     INVENTAIRE
+  ========================================================= */
+  
+  function renderInventory() {
+  
+      const container =
+          document.getElementById("inventoryList");
+  
+      container.innerHTML = "";
+  
+  
+      if (!player.equipment.length) {
+  
+          container.innerHTML =
+              `<div class="empty-inventory">
+                  Inventaire vide
+              </div>`;
+  
+          return;
+      }
+  
+  
+      player.equipment.forEach(item => {
+  
+          const div =
+              document.createElement("div");
+  
+          div.className =
+              "inventory-item";
+  
+          div.innerText =
+              item;
+  
+          container.appendChild(div);
+  
+      });
+  
+  }
+  
+  
+  /* =========================================================
+     FICHE PERSONNAGE
+  ========================================================= */
+  
+  function renderSheet() {
+  
+      document.getElementById("sheetName")
+          .innerText = player.name;
+  
+      document.getElementById("sheetAge")
+          .innerText = `${player.age} ans`;
+  
+      document.getElementById("sheetClass")
+          .innerText = player.class;
+  
+      document.getElementById("sheetChance")
+          .innerText = player.chance;
+  
+  
+      const mainContainer =
+          document.getElementById("sheetMainStats");
+  
+      mainContainer.innerHTML = "";
+  
+  
+      Object.entries(player.mainStats).forEach(
+          ([name, value]) => {
+  
+              mainContainer.innerHTML += `
+  
+                  <div class="sheet-stat">
+                      <span>${name}</span>
+                      <strong>${value}</strong>
+                  </div>
+  
+              `;
+  
+          }
+      );
+  
+  
+      const secondaryContainer =
+          document.getElementById("sheetSecondaryStats");
+  
+      secondaryContainer.innerHTML = "";
+  
+  
+      Object.entries(player.secondaryStats).forEach(
+          ([name, value]) => {
+  
+              secondaryContainer.innerHTML += `
+  
+                  <div class="sheet-stat">
+                      <span>${name}</span>
+                      <strong>${value}</strong>
+                  </div>
+  
+              `;
+  
+          }
+      );
+  
+  
+      const talentContainer =
+          document.getElementById("sheetTalents");
+  
+      talentContainer.innerHTML = "";
+  
+  
+      Object.entries(player.talents).forEach(
+          ([name, value]) => {
+  
+              talentContainer.innerHTML += `
+  
+                  <div class="sheet-stat">
+                      <span>${name}</span>
+                      <strong>${value}</strong>
+                  </div>
+  
+              `;
+  
+          }
+      );
+  
+  
+      document.getElementById("sheetEquipment")
+          .innerText =
+          player.equipment.join(", ");
+  
+  
+      document.getElementById("sheetLore")
+          .innerText =
+          player.lore;
+  
+  }
+  
+  
+  /* =========================================================
+     MODAL
+  ========================================================= */
+  
+  function openCharacterSheet() {
+  
+      document
+          .getElementById("sheetModal")
+          .classList.add("active");
+  
+  }
+  
+  
+  function closeCharacterSheet() {
+  
+      document
+          .getElementById("sheetModal")
+          .classList.remove("active");
+  
+  }
+  
+  
+  document
+      .getElementById("sheetModal")
+      .addEventListener("click", event => {
+  
+          if (event.target.id === "sheetModal") {
+  
+              closeCharacterSheet();
+  
+          }
+  
+      });
+  
+  
+  /* =========================================================
+     CHAT
+  ========================================================= */
+  
+  function sendMessage() {
+  
+      const input =
+          document.getElementById("chatInput");
+  
+      const text =
+          input.value.trim();
+  
+  
+      if (!text) return;
+  
+  
+      const messages =
+          document.getElementById("messages");
+  
+  
+      const message =
+          document.createElement("div");
+  
+      message.className =
+          "message";
+  
+  
+      message.innerHTML = `
+  
+          <span class="message-name">
+              ${player.name} :
+          </span>
+  
+          ${escapeHtml(text)}
+  
+      `;
+  
+  
+      messages.appendChild(message);
+  
+  
+      input.value = "";
+  
+      messages.scrollTop =
+          messages.scrollHeight;
+  
+  }
+  
+  
+  function handleChatKey(event) {
+  
+      if (event.key === "Enter") {
+  
+          sendMessage();
+  
+      }
+  
+  }
+  
+  
+  /* =========================================================
+     SÉCURITÉ CHAT
+  ========================================================= */
+  
+  function escapeHtml(text) {
+  
+      const div =
+          document.createElement("div");
+  
+      div.textContent = text;
+  
+      return div.innerHTML;
+  
+  }
+  
+  
+  /* =========================================================
+     FUTUR SOCKET.IO
+  =========================================================
+  
+     Plus tard, ces fonctions seront remplacées/
+     complétées par des événements serveur.
+  
+     Exemple :
+  
+     socket.on("gameState", state => {
+         ...
+     });
+  
+     socket.on("mapUpdate", map => {
+         ...
+     });
+  
+     socket.on("playersUpdate", players => {
+         ...
+     });
+  
+     socket.on("chatMessage", message => {
+         ...
+     });
+  
+     socket.emit("rollDice", {
+         dice: 20,
+         selectedStats: [...]
+     });
+  
+  ========================================================= */
+  
+  </script>
+  
+  </body>
+  </html>
+  <script>
+    /* Counter animation */
+    document.querySelectorAll('.n[data-to]').forEach(el => {
+      const t = +el.dataset.to,
+        step = t / 45;
+      let c = 0;
+      const tm = setInterval(() => {
+        c = Math.min(c + step, t);
+        el.textContent = Math.floor(c);
+        if (c >= t) clearInterval(tm);
+      }, 25);
+    });
+    
+    function go() {
+      window.parent.document.querySelector('.tab-btn[data-tab="html"]')?.click();
+      window.parent.document.querySelector('.CodeMirror textarea')?.focus();
+    }
+    
+  </script>
+</body>
+</html>
