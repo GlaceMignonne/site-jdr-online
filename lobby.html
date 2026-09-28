@@ -893,7 +893,12 @@ function updateSelectedCharacterDisplay() {
 
         await loadPlayers();
 
-    }
+
+        if (role === "joueur") {
+
+            await loadMyCharacters();
+
+        }
 
 
     // =====================================================
