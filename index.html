@@ -1503,11 +1503,12 @@
         .from("parties")
         .insert([
             {
+                id: crypto.randomUUID(),
                 code: code,
                 mj_name: name,
                 started: false
             }
-        ])
+       ])
         .select()
         .single();
 
