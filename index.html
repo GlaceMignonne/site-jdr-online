@@ -1502,19 +1502,25 @@
     console.log("VERSION NOUVELLE createGame");
     console.log("ID généré :", crypto.randomUUID());
 
+    const testId = crypto.randomUUID();
+
     const { data, error } = await supabaseClient
         .from("parties")
         .insert([
-           {
-                id: crypto.randomUUID(),
+            {
+                id: testId,
                 code: code,
                 mj_name: name,
                 started: false
-           }
+            }
         ])
-        .select()
-        .single();
+    .select()
+    .single();
 
+    console.log("ID envoyé à Supabase :", testId);
+    console.log("Résultat :", data);
+    console.log("Erreur :", error);
+   
     if (error) {
 
         console.error("Erreur Supabase :", error);
