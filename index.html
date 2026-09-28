@@ -1499,16 +1499,19 @@
     }
 
     // Créer la partie dans Supabase
+    console.log("VERSION NOUVELLE createGame");
+    console.log("ID généré :", crypto.randomUUID());
+
     const { data, error } = await supabaseClient
         .from("parties")
         .insert([
-            {
+           {
                 id: crypto.randomUUID(),
                 code: code,
                 mj_name: name,
                 started: false
-            }
-       ])
+           }
+        ])
         .select()
         .single();
 
