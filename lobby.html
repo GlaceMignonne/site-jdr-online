@@ -1,32 +1,161 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Lobby - JDR</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 60px auto;
+            padding: 30px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+
+        .box {
+            background: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .code {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 6px;
+            margin: 15px 0;
+        }
+
+        .mj {
+            font-size: 20px;
+        }
+
+        .players-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        #playersList {
+            color: #aaa;
+            min-height: 40px;
+        }
+
+        .player {
+            background: #292929;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            text-align: left;
+        }
+
+        .online {
+            color: #55dd77;
+            margin-right: 8px;
+        }
+
+        .waiting {
+            color: #aaa;
+        }
+
+        #status {
+            margin-top: 20px;
+            color: #aaa;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>Lobby de la partie</h1>
+    <div class="container">
 
-    <p id="partyInfo">Chargement...</p>
+        <h1>🎲 Lobby de la partie</h1>
+
+        <div class="box">
+
+            <div>Code de la partie</div>
+
+            <div id="partyCode" class="code">
+                Chargement...
+            </div>
+
+            <div id="mjName" class="mj">
+                Chargement du MJ...
+            </div>
+
+        </div>
+
+
+        <div class="box">
+
+            <div class="players-title">
+                👥 Joueurs
+            </div>
+
+            <div id="playersList">
+                <div class="waiting">
+                    Aucun joueur connecté pour le moment.
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="status">
+            ⏳ En attente du lancement de la partie...
+        </div>
+
+    </div>
+
+
+    <!-- Supabase -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
     <script src="supabase.js"></script>
+
 
     <script>
 
         async function loadParty() {
 
             const code = localStorage.getItem("jdr_party_code");
-            const info = document.getElementById("partyInfo");
 
+            const partyCode = document.getElementById("partyCode");
+            const mjName = document.getElementById("mjName");
+            const status = document.getElementById("status");
+
+            // Vérifier qu'une partie existe
             if (!code) {
-                info.textContent = "Aucune partie trouvée.";
+
+                partyCode.textContent = "Aucune partie";
+
+                mjName.textContent =
+                    "Aucune partie trouvée.";
+
+                status.textContent =
+                    "Retourne à l'accueil pour créer ou rejoindre une partie.";
+
                 return;
             }
+
+
+            // Chercher la partie dans Supabase
 
             const { data, error } = await supabaseClient
                 .from("parties")
@@ -34,21 +163,57 @@
                 .eq("code", code)
                 .single();
 
+
+            // Erreur
+
             if (error) {
-                console.error("Erreur :", error);
-                info.textContent = "Impossible de charger la partie.";
+
+                console.error("Erreur Supabase :", error);
+
+                partyCode.textContent = code;
+
+                mjName.textContent =
+                    "Impossible de charger le MJ.";
+
+                status.textContent =
+                    "Erreur lors du chargement de la partie.";
+
                 return;
             }
 
-            info.innerHTML =
-                "Code de la partie : <strong>" + data.code + "</strong><br>" +
-                "MJ : " + data.mj_name + "<br>" +
-                "Partie commencée : " + (data.started ? "Oui" : "Non");
+
+            // Afficher les informations
+
+            partyCode.textContent =
+                data.code;
+
+            mjName.textContent =
+                "MJ : " + data.mj_name;
+
+
+            // Statut de la partie
+
+            if (data.started) {
+
+                status.textContent =
+                    "🚀 La partie a commencé !";
+
+            } else {
+
+                status.textContent =
+                    "⏳ En attente du lancement de la partie...";
+
+            }
+
         }
+
+
+        // Charger la partie
 
         loadParty();
 
     </script>
 
 </body>
+
 </html>
