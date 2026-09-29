@@ -2047,7 +2047,50 @@ const ALL_STATS = [
       };
   
   }
-  
+
+async function saveCharacterToSupabase(character) {
+
+    const {
+        data: { user },
+        error: userError
+    } = await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+
+        alert(
+            "Impossible de récupérer ton compte joueur."
+        );
+
+        return false;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("characters")
+            .upsert({
+                id: character.id,
+                player_id: user.id,
+                name: character.name,
+                class: character.class
+            });
+
+    if (error) {
+
+        console.error(
+            "Erreur sauvegarde personnage Supabase :",
+            error
+        );
+
+        alert(
+            "Impossible de sauvegarder le personnage dans la partie."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+   
   /* =========================================================
      SAUVEGARDER
   ========================================================= */
