@@ -2050,46 +2050,51 @@ const ALL_STATS = [
   }
 
 async function saveCharacterToSupabase(character) {
+  const {
+    data: { user },
+    error: userError
+  } = await supabaseClient.auth.getUser();
 
-    const {
-        data: { user },
-        error: userError
-    } = await supabaseClient.auth.getUser();
+  if (userError || !user) {
+    alert("Impossible de récupérer ton compte joueur.");
+    return false;
+  }
 
-    if (userError || !user) {
+  const { error } = await supabaseClient
+    .from("characters")
+    .upsert({
+      id: character.id,
+      player_id: user.id,
 
-        alert(
-            "Impossible de récupérer ton compte joueur."
-        );
+      name: character.name,
+      age: character.age,
+      class: character.class,
+      luck: Number(character.luck) || 0,
 
-        return false;
-    }
+      stats: character.stats,
+      talents: character.talents,
+      hearts: character.hearts,
 
-    const { error } =
-        await supabaseClient
-            .from("characters")
-            .upsert({
-                id: character.id,
-                player_id: user.id,
-                name: character.name,
-                class: character.class
-            });
+      portrait_url: character.portraitData,
 
-    if (error) {
+      inventory: character.equipment,
+      lore: character.lore
+    });
 
-        console.error(
-            "Erreur sauvegarde personnage Supabase :",
-            error
-        );
+  if (error) {
+    console.error(
+      "Erreur sauvegarde personnage Supabase :",
+      error
+    );
 
-        alert(
-            "Impossible de sauvegarder le personnage dans la partie."
-        );
+    alert(
+      "Impossible de sauvegarder le personnage dans la partie."
+    );
 
-        return false;
-    }
+    return false;
+  }
 
-    return true;
+  return true;
 }
    
   /* =========================================================
