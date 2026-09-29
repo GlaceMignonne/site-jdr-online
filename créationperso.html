@@ -1799,47 +1799,16 @@ const ALL_STATS = [
   ========================================================= */
   
   document.getElementById(
-      "class"
-  ).addEventListener(
-      "change",
-      () => {
-  
-          updateClassTalent();
-  
-          renderStats();
-  
-  
-          const currentClass =
-              getCurrentClass();
-  
-          const commanderCard =
-              document.getElementById(
-                  "commanderCard"
-              );
-  
-  
-          if (
-              currentClass ===
-              "commandant"
-          ) {
-  
-              commanderCard.classList.remove(
-                  "hidden"
-              );
-  
-          } else {
-  
-              commanderCard.classList.add(
-                  "hidden"
-              );
-  
-          }
-  
-  
-          updateTarget();
-  
-      }
-  );
+    "class"
+).addEventListener(
+    "change",
+    () => {
+
+        updateClassTalent();
+        renderStats();
+
+    }
+);
   
   
   /* =========================================================
