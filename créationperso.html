@@ -1426,8 +1426,6 @@ const ALL_STATS = [
 
       input.addEventListener("input", event => {
         stats[stat] = Number(event.target.value) || 0;
-
-        updateTarget();
       });
 
       row.addEventListener("click", () => {
