@@ -460,54 +460,6 @@
    PORTRAIT
 ========================================================= */
 
-document.getElementById(
-    "portraitInput"
-).addEventListener(
-    "change",
-    event => {
-
-        const file =
-            event.target.files[0];
-
-        if (!file) {
-            return;
-        }
-
-        // On garde le vrai fichier pour l'upload Supabase
-        portraitFile = file;
-
-        // Prévisualisation immédiate dans la fiche
-        const reader =
-            new FileReader();
-
-        reader.onload =
-            () => {
-
-                const image =
-                    document.getElementById(
-                        "portrait"
-                    );
-
-                image.src =
-                    reader.result;
-
-                image.classList.remove(
-                    "hidden"
-                );
-
-                document.getElementById(
-                    "portraitInput"
-                ).classList.add(
-                    "hidden"
-                );
-
-            };
-
-        reader.readAsDataURL(file);
-
-    }
-);
-
   #portrait {
       width: 180px;
       height: 240px;
