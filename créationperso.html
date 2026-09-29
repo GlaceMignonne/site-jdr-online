@@ -1993,8 +1993,10 @@ const ALL_STATS = [
   
           id:
              
-              currentCharacterId || crypto.randomUUID(),
-  
+              currentCharacterId && currentCharacterId.includes("-")
+                ? currentCharacterId
+                : crypto.randomUUID(),
+        
           name:
               document.getElementById(
                   "name"
