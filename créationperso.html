@@ -2565,10 +2565,6 @@ const ALL_STATS = [
       portraitData =
           null;
   
-      commanderIsLeader =
-          false;
-  
-  
       document.getElementById(
           "name"
       ).value = "";
@@ -2617,14 +2613,6 @@ const ALL_STATS = [
           "portraitInput"
       ).value = "";
   
-  
-      document.getElementById(
-          "commanderCard"
-      ).classList.add(
-          "hidden"
-      );
-  
-  
       initializeStats();
   
       renderStats();
@@ -2633,14 +2621,7 @@ const ALL_STATS = [
   
       renderHearts();
   
-      updateCommander();
-  
-      updateSelectionDisplay();
-  
-      updateTarget();
-  
   }
-  
   
   /* =========================================================
      DEMARRAGE
@@ -2655,12 +2636,6 @@ const ALL_STATS = [
   renderHearts();
   
   renderBank();
-  
-  updateCommander();
-  
-  updateSelectionDisplay();
-  
-  updateTarget();
   
   </script>
   
