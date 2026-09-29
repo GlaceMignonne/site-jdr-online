@@ -1394,10 +1394,6 @@ const ALL_STATS = [
         row.classList.add("main-stat");
       }
 
-      if (selected.has(`stat:${stat}`)) {
-        row.classList.add("selected");
-      }
-
       const name = document.createElement("div");
       name.className = "stat-name";
       name.textContent = stat;
@@ -1426,10 +1422,6 @@ const ALL_STATS = [
 
       input.addEventListener("input", event => {
         stats[stat] = Number(event.target.value) || 0;
-      });
-
-      row.addEventListener("click", () => {
-        toggleSelection(`stat:${stat}`);
       });
 
       row.appendChild(name);
