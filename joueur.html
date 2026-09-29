@@ -1554,7 +1554,186 @@
       updateTarget();
 
   });  
-  
+
+  /* =========================================================
+   CHARGEMENT DU PERSONNAGE DEPUIS SUPABASE
+========================================================= */
+
+async function loadPlayerCharacter() {
+
+    const {
+        data: { user },
+        error: userError
+    } = await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+
+        alert("Tu dois être connecté pour accéder à ton personnage.");
+
+        window.location.href = "lobby.html";
+
+        return false;
+    }
+
+
+    /* =====================================================
+       RÉCUPÉRATION DU JOUEUR
+    ===================================================== */
+
+    const {
+        data: playerData,
+        error: playerError
+    } = await supabaseClient
+        .from("players")
+        .select("character_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+    if (playerError) {
+
+        console.error(
+            "Erreur récupération joueur :",
+            playerError
+        );
+
+        alert("Impossible de récupérer tes données joueur.");
+
+        return false;
+    }
+
+
+    if (!playerData || !playerData.character_id) {
+
+        alert(
+            "Aucun personnage sélectionné. Retour au lobby."
+        );
+
+        window.location.href = "lobby.html";
+
+        return false;
+    }
+
+
+    /* =====================================================
+       RÉCUPÉRATION DU PERSONNAGE
+    ===================================================== */
+
+    const {
+        data: character,
+        error: characterError
+    } = await supabaseClient
+        .from("characters")
+        .select("*")
+        .eq("id", playerData.character_id)
+        .eq("player_id", user.id)
+        .maybeSingle();
+
+
+    if (characterError) {
+
+        console.error(
+            "Erreur récupération personnage :",
+            characterError
+        );
+
+        alert(
+            "Impossible de récupérer ton personnage."
+        );
+
+        return false;
+    }
+
+
+    if (!character) {
+
+        alert(
+            "Le personnage sélectionné est introuvable."
+        );
+
+        window.location.href = "lobby.html";
+
+        return false;
+    }
+
+
+    /* =====================================================
+       TRANSFORMATION DES DONNÉES
+    ===================================================== */
+
+    player = {
+
+        name:
+            character.name || "Personnage",
+
+        age:
+            Number(character.age) || 0,
+
+        class:
+            character.class || "Aucune",
+
+        chance:
+            Number(character.luck) || 0,
+
+        hearts:
+            character.hearts || [
+                "healthy",
+                "healthy",
+                "healthy",
+                "healthy"
+            ],
+
+        mainStats:
+            character.stats?.main || {},
+
+        secondaryStats:
+            character.stats?.secondary || {},
+
+        talents:
+            character.talents || {},
+
+        equipment:
+            Array.isArray(character.inventory)
+                ? character.inventory
+                : [],
+
+        lore:
+            character.lore || "",
+
+        portrait_url:
+            character.portrait_url || null,
+
+        isLeader:
+            false
+
+    };
+
+
+    /* =====================================================
+       AFFICHAGE DU NOM DANS LE HEADER
+    ===================================================== */
+
+    document.getElementById(
+        "characterName"
+    ).innerText =
+        player.name;
+
+
+    document.getElementById(
+        "myChance"
+    ).innerText =
+        player.chance;
+
+
+    console.log(
+        "Personnage chargé :",
+        player
+    );
+
+
+    return true;
+}
+    
   /* =========================================================
      COEURS
   ========================================================= */
