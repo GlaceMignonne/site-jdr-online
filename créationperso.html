@@ -2067,52 +2067,169 @@ const ALL_STATS = [
   }
 
 async function saveCharacterToSupabase(character) {
-  const {
-    data: { user },
-    error: userError
-  } = await supabaseClient.auth.getUser();
 
-  if (userError || !user) {
-    alert("Impossible de récupérer ton compte joueur.");
-    return false;
-  }
+    const {
+        data: { user },
+        error: userError
+    } = await supabaseClient.auth.getUser();
 
-  const { error } = await supabaseClient
-    .from("characters")
-    .upsert({
-      id: character.id,
-      player_id: user.id,
 
-      name: character.name,
-      age: character.age,
-      class: character.class,
-      luck: Number(character.luck) || 0,
+    if (userError || !user) {
 
-      stats: character.stats,
-      talents: character.talents,
-      hearts: character.hearts,
+        alert(
+            "Impossible de récupérer ton compte joueur."
+        );
 
-      portrait_url: character.portraitData,
+        return false;
+    }
 
-      inventory: character.equipment,
-      lore: character.lore
-    });
 
-  if (error) {
-    console.error(
-      "Erreur sauvegarde personnage Supabase :",
-      error
-    );
+    /* =====================================================
+       PORTRAIT
+    ===================================================== */
 
-    alert(
-      "Impossible de sauvegarder le personnage dans la partie."
-    );
+    let portraitUrl =
+        character.portraitData || null;
 
-    return false;
-  }
 
-  return true;
-}
+    if (portraitFile) {
+
+        // Détermine l'extension du fichier
+        const extension =
+            portraitFile.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+        // Chemin du fichier dans Storage
+        const filePath =
+            `${user.id}/${character.id}.${extension}`;
+
+
+        const {
+            error: uploadError
+        } = await supabaseClient
+            .storage
+            .from("portraits")
+            .upload(
+                filePath,
+                portraitFile,
+                {
+                    upsert: true,
+                    contentType: portraitFile.type
+                }
+            );
+
+
+        if (uploadError) {
+
+            console.error(
+                "Erreur upload portrait :",
+                uploadError
+            );
+
+            alert(
+                "Impossible d'enregistrer le portrait."
+            );
+
+            return false;
+        }
+
+
+        // Récupération de l'URL publique
+        const {
+            data: publicUrlData
+        } =
+            supabaseClient
+                .storage
+                .from("portraits")
+                .getPublicUrl(
+                    filePath
+                );
+
+
+        portraitUrl =
+            publicUrlData.publicUrl;
+
+
+        // Le portrait est maintenant enregistré.
+        // On n'a plus besoin de conserver le fichier local.
+        portraitFile = null;
+    }
+
+
+    /* =====================================================
+       PERSONNAGE
+    ===================================================== */
+
+    const {
+        error
+    } = await supabaseClient
+        .from("characters")
+        .upsert({
+
+            id:
+                character.id,
+
+            player_id:
+                user.id,
+
+            name:
+                character.name,
+
+            age:
+                Number(character.age) || null,
+
+            class:
+                character.class,
+
+            luck:
+                Number(character.luck) || 0,
+
+            stats:
+                character.stats,
+
+            talents:
+                character.talents,
+
+            hearts:
+                character.hearts,
+
+            portrait_url:
+                portraitUrl,
+
+            inventory:
+                character.equipment,
+
+            lore:
+                character.lore
+
+        });
+
+
+    if (error) {
+
+        console.error(
+            "Erreur sauvegarde personnage Supabase :",
+            error
+        );
+
+        alert(
+            "Impossible de sauvegarder le personnage dans la partie."
+        );
+
+        return false;
+    }
+
+
+    // On remet l'URL dans les données du personnage
+    character.portraitData =
+        portraitUrl;
+
+
+    return true;
+} 
    
   /* =========================================================
      SAUVEGARDER
