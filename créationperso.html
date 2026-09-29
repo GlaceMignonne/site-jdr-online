@@ -1627,40 +1627,30 @@ const ALL_STATS = Object.values(STAT_GROUPS).flat();
   ========================================================= */
   
   function renderStats() {
-  
-      initializeStats();
-  
-      const main =
-          document.getElementById("mainStats");
-  
-      const secondary =
-          document.getElementById("secondaryStats");
-  
-      main.innerHTML = "";
-      secondary.innerHTML = "";
-  
-  
-      MAIN_STATS.forEach(stat => {
-  
-          main.appendChild(
-              createStatRow(stat)
-          );
-  
-      });
-  
-  
-      SECONDARY_STATS.forEach(stat => {
-  
-          secondary.appendChild(
-              createStatRow(stat)
-          );
-  
-      });
-  
-  
-      updateCounters();
-  
-  }
+  const container = document.getElementById("mainStats");
+
+  container.innerHTML = "";
+
+  Object.entries(STAT_GROUPS).forEach(([groupName, statsList]) => {
+
+    const group = document.createElement("div");
+    group.className = "stat-group";
+
+    const title = document.createElement("div");
+    title.className = "stat-group-title";
+    title.textContent = groupName;
+
+    group.appendChild(title);
+
+    statsList.forEach(stat => {
+      group.appendChild(createStatRow(stat));
+    });
+
+    container.appendChild(group);
+  });
+
+  updateCounters();
+}
   
   
   function createStatRow(stat) {
@@ -1740,7 +1730,6 @@ const ALL_STATS = Object.values(STAT_GROUPS).flat();
       return row;
   
   }
-  
   
   /* =========================================================
      COMPTEURS
