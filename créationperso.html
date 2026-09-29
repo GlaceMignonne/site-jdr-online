@@ -456,41 +456,57 @@
       resize: vertical;
   }
   
-  /* =====================================================
-     PORTRAIT
-  ===================================================== */
-  
-  .portrait-area {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 240px;
-      margin-bottom: 20px;
-  }
-  
-  .portrait-container {
-      text-align: center;
-  }
-  
-  #portrait {
-      width: 190px;
-      height: 190px;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 2px solid #555;
-      display: block;
-      margin: auto;
-      background: #111;
-  }
-  
-  #portraitInput {
-      margin-top: 12px;
-      max-width: 100%;
-  }
-  
-  .hidden {
-      display: none !important;
-  }
+/* =========================================================
+   PORTRAIT
+========================================================= */
+
+document.getElementById(
+    "portraitInput"
+).addEventListener(
+    "change",
+    event => {
+
+        const file =
+            event.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        // On garde le vrai fichier pour l'upload Supabase
+        portraitFile = file;
+
+        // Prévisualisation immédiate dans la fiche
+        const reader =
+            new FileReader();
+
+        reader.onload =
+            () => {
+
+                const image =
+                    document.getElementById(
+                        "portrait"
+                    );
+
+                image.src =
+                    reader.result;
+
+                image.classList.remove(
+                    "hidden"
+                );
+
+                document.getElementById(
+                    "portraitInput"
+                ).classList.add(
+                    "hidden"
+                );
+
+            };
+
+        reader.readAsDataURL(file);
+
+    }
+);
   
   /* =====================================================
      ETAT / COEURS
