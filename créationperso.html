@@ -2099,40 +2099,44 @@ async function saveCharacterToSupabase(character) {
       "save"
   ).addEventListener(
       "click",
-      () => {
-  
+      async () => {
+
           const character =
               getCharacterData();
-  
-  
+
           currentCharacterId =
               character.id;
-  
-  
+
           const bank =
               getCharacterBank();
-  
-  
+
+
           bank[character.id] =
               character;
-  
-  
+
           saveCharacterBank(
               bank
           );
-  
-  
+
+          const saved =
+              await saveCharacterToSupabase(
+                  character
+              );
+
+          if (!saved) {
+              return;
+          }
+
           renderBank();
-  
-  
+
+
           alert(
-              "Personnage sauvegardé dans la banque."
+              "Personnage sauvegardé."
           );
-  
+
       }
   );
-  
-  
+    
   /* =========================================================
      CHARGER PERSONNAGE
   ========================================================= */
