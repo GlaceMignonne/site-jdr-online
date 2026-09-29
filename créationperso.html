@@ -1992,9 +1992,8 @@ const ALL_STATS = [
       return {
   
           id:
-              currentCharacterId
-              ||
-              Date.now().toString(),
+             
+              currentCharacterId || crypto.randomUUID(),
   
           name:
               document.getElementById(
