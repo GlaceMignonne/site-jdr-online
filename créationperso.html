@@ -1627,108 +1627,78 @@ const ALL_STATS = Object.values(STAT_GROUPS).flat();
   ========================================================= */
   
   function renderStats() {
-  const container = document.getElementById("mainStats");
+      const container = document.getElementById("mainStats");
 
-  container.innerHTML = "";
+      container.innerHTML = "";
 
-  Object.entries(STAT_GROUPS).forEach(([groupName, statsList]) => {
+      Object.entries(STAT_GROUPS).forEach(([groupName, statsList]) => {
 
-    const group = document.createElement("div");
-    group.className = "stat-group";
+        const group = document.createElement("div");
+        group.className = "stat-group";
 
-    const title = document.createElement("div");
-    title.className = "stat-group-title";
-    title.textContent = groupName;
+        const title = document.createElement("div");
+        title.className = "stat-group-title";
+        title.textContent = groupName;
 
-    group.appendChild(title);
+        group.appendChild(title);
 
-    statsList.forEach(stat => {
-      group.appendChild(createStatRow(stat));
-    });
+        statsList.forEach(stat => {
+          group.appendChild(createStatRow(stat));
+        });
 
-    container.appendChild(group);
-  });
+        container.appendChild(group);
+      });
 
-  updateCounters();
-}
+      updateCounters();
+  }
   
   
   function createStatRow(stat) {
-  
-      const row =
-          document.createElement("div");
-  
+      const row = document.createElement("div");
       row.className = "stat-row";
-  
-  
+
       if (selected.has(`stat:${stat}`)) {
-  
-          row.classList.add("selected");
-  
+        row.classList.add("selected");
       }
-  
-  
-      const name =
-          document.createElement("div");
-  
+
+      const name = document.createElement("div");
       name.className = "stat-name";
-  
-  
-      const bonus =
-          getClassBonus(stat);
-  
-  
-      name.innerHTML = `
-          <strong>${stat}</strong>
-          ${
-              bonus > 0
-              ? `<span class="bonus">(+${bonus})</span>`
-              : ""
-          }
-      `;
-  
-  
-      name.onclick = () => {
-  
-          toggleSelection(`stat:${stat}`);
-  
-      };
-  
-  
-      const input =
-          document.createElement("input");
-  
+      name.textContent = stat;
+
+      const bonus = getClassBonus(stat);
+
+      const bonusDisplay = document.createElement("span");
+      bonusDisplay.className = "stat-bonus";
+
+      if (bonus > 0) {
+        bonusDisplay.textContent = `+${bonus}`;
+      }
+
+      const input = document.createElement("input");
       input.type = "number";
-  
       input.min = "0";
-  
-      input.value =
-          stats[stat] || 0;
-  
-      input.className =
-          "stat-value";
-  
-  
-      input.addEventListener(
-          "input",
-          () => {
-  
-              stats[stat] =
-                  Number(input.value) || 0;
-  
-              updateCounters();
-              updateTarget();
-  
-          }
-      );
-  
-  
+      input.value = stats[stat] || 0;
+
+      input.addEventListener("click", event => {
+        event.stopPropagation();
+      });
+
+      input.addEventListener("input", event => {
+        stats[stat] = Number(event.target.value) || 0;
+
+        updateCounters();
+        updateTarget();
+      });
+
+      row.addEventListener("click", () => {
+        toggleSelection(`stat:${stat}`);
+      });
+
       row.appendChild(name);
+      row.appendChild(bonusDisplay);
       row.appendChild(input);
-  
-  
+
       return row;
-  
   }
   
   /* =========================================================
