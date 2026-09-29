@@ -1591,25 +1591,12 @@ const ALL_STATS = Object.values(STAT_GROUPS).flat();
   ========================================================= */
   
   function initializeStats() {
-  
-      MAIN_STATS.forEach(stat => {
-  
-          if (stats[stat] === undefined) {
-              stats[stat] = 0;
-          }
-  
-      });
-  
-      SECONDARY_STATS.forEach(stat => {
-  
-          if (stats[stat] === undefined) {
-              stats[stat] = 0;
-          }
-  
-      });
-  
-  }
-  
+  ALL_STATS.forEach(stat => {
+    if (stats[stat] === undefined) {
+      stats[stat] = 0;
+    }
+  });
+}
   
   /* =========================================================
      CLASSE
