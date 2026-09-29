@@ -1697,59 +1697,60 @@ const ALL_STATS = [
     }
     
   function createStatRow(stat, isMainStat = false) {
-    const row = document.createElement("div");
+      const row = document.createElement("div");
 
-    row.className = "stat-row";
+      row.className = "stat-row";
 
-    if (isMainStat) {
-      row.classList.add("main-stat");
+      if (isMainStat) {
+        row.classList.add("main-stat");
+      }
+
+      if (selected.has(`stat:${stat}`)) {
+        row.classList.add("selected");
+      }
+
+      const name = document.createElement("div");
+      name.className = "stat-name";
+      name.textContent = stat;
+
+      // Bonus accordé par la classe
+      const bonus = getClassBonus(stat);
+
+      const bonusDisplay = document.createElement("span");
+      bonusDisplay.className = "stat-bonus";
+
+      if (bonus !== 0) {
+        bonusDisplay.textContent = bonus > 0
+          ? `+${bonus}`
+          : `${bonus}`;
+      }
+
+      const input = document.createElement("input");
+
+      input.type = "number";
+      input.min = "0";
+      input.value = stats[stat] || 0;
+
+      input.addEventListener("click", event => {
+        event.stopPropagation();
+      });
+
+      input.addEventListener("input", event => {
+        stats[stat] = Number(event.target.value) || 0;
+
+        updateTarget();
+      });
+
+      row.addEventListener("click", () => {
+        toggleSelection(`stat:${stat}`);
+      });
+
+      row.appendChild(name);
+      row.appendChild(bonusDisplay);
+      row.appendChild(input);
+
+      return row;
     }
-
-    if (selected.has(`stat:${stat}`)) {
-      row.classList.add("selected");
-    }
-
-    const name = document.createElement("div");
-
-    name.className = "stat-name";
-    name.textContent = stat;
-
-    const bonus = getClassBonus(stat);
-
-    const bonusDisplay = document.createElement("span");
-
-    bonusDisplay.className = "stat-bonus";
-
-    if (bonus > 0) {
-      bonusDisplay.textContent = `+${bonus}`;
-    }
-
-    const input = document.createElement("input");
-
-    input.type = "number";
-    input.min = "0";
-    input.value = stats[stat] || 0;
-
-    input.addEventListener("click", event => {
-      event.stopPropagation();
-    });
-
-    input.addEventListener("input", event => {
-      stats[stat] = Number(event.target.value) || 0;
-
-      updateTarget();
-    });
-
-    row.addEventListener("click", () => {
-      toggleSelection(`stat:${stat}`);
-    });
-
-    row.appendChild(name);
-    row.appendChild(bonusDisplay);
-    row.appendChild(input);
-
-    return row;
-  }
   
   /* =========================================================
      TALENTS
