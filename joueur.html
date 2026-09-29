@@ -1531,24 +1531,29 @@
      INITIALISATION
   ========================================================= */
   
-  document.addEventListener("DOMContentLoaded", () => {
-  
+  document.addEventListener("DOMContentLoaded", async () => {
+
+      const loaded = await loadPlayerCharacter();
+
+      if (!loaded) {
+          return;
+      }
+
       renderMyHearts();
-  
+
       renderStats();
-  
+
       renderTalents();
-  
+
       renderPlayers();
-  
+
       renderInventory();
-  
+
       renderSheet();
-  
+
       updateTarget();
-  
-  });
-  
+
+  });  
   
   /* =========================================================
      COEURS
