@@ -2247,6 +2247,16 @@ async function saveCharacterToSupabase(character) {
           currentCharacterId =
               character.id;
 
+          const saved =
+              await saveCharacterToSupabase(
+                  character
+              );
+
+          if (!saved) {
+              return;
+          }
+
+
           const bank =
               getCharacterBank();
 
@@ -2258,17 +2268,7 @@ async function saveCharacterToSupabase(character) {
               bank
           );
 
-          const saved =
-              await saveCharacterToSupabase(
-                  character
-              );
-
-          if (!saved) {
-              return;
-          }
-
           renderBank();
-
 
           alert(
               "Personnage sauvegardé."
