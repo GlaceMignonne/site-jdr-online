@@ -1459,77 +1459,31 @@
   <script>
   
   /* =========================================================
-     DONNÉES DU JOUEUR
-     Prototype local uniquement
+     DONNÉES DU JOUEUR (version multi)
   ========================================================= */
   
-  const player = {
-  
-      name: "Kael",
-  
-      age: 29,
-  
-      class: "Éclaireur",
-  
-      chance: 4,
-  
-      hearts: [
-          "healthy",
-          "healthy",
-          "poison",
-          "healthy"
-      ],
-  
-      mainStats: {
-  
-          "Physique": 7,
-          "Dextérité": 9,
-          "Esprit": 6,
-          "Survie": 10,
-          "Armes": 8
-  
-      },
-  
-      secondaryStats: {
-  
-          "Force": 4,
-          "Résistance": 5,
-          "Furtivité": 6,
-          "Agilité": 8,
-          "Intelligence": 5,
-          "Éloquence": 2,
-          "Perception": 8,
-          "Improvisation": 4,
-          "Armes blanches": 5,
-          "Armes contondantes": 2,
-          "Armes à distance": 6
-  
-      },
-  
-      talents: {
-  
-          "Survie": 2,
-          "Repérage": 2
-  
-      },
-  
-      equipment: [
-  
-          "Couteau",
-          "Bandages",
-          "Lampe torche",
-          "Bouteille d'eau"
-  
-      ],
-  
-      lore:
-          "Ancien éclaireur d'une petite communauté " +
-          "installée dans les ruines de la ville.",
-  
+  let player = {
+      name: "",
+      age: 0,
+      class: "",
+      chance: 0,
+
+      hearts: [],
+
+      mainStats: {},
+
+      secondaryStats: {},
+
+      talents: {},
+
+      equipment: [],
+
+      lore: "",
+
+      portrait_url: null,
+
       isLeader: false
-  
   };
-  
   
   /* =========================================================
      AUTRES JOUEURS
