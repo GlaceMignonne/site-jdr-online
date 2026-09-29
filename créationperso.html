@@ -1654,26 +1654,20 @@ const ALL_STATS = [
 
       Object.entries(STAT_GROUPS).forEach(([groupName, statsList]) => {
 
-        const group = document.createElement("div");
-        group.className = "stat-group";
+        // Ligne de la caractéristique principale
+        const mainRow = createStatRow(groupName, true);
+        container.appendChild(mainRow);
 
-        const title = document.createElement("div");
-        title.className = "stat-group-title";
-        title.textContent = groupName;
-
-        group.appendChild(title);
-
+        // Sous-stats
         statsList.forEach(stat => {
-          group.appendChild(createStatRow(stat));
+          const row = createStatRow(stat, false);
+          row.classList.add("sub-stat");
+
+          container.appendChild(row);
         });
-
-        container.appendChild(group);
       });
-
-      updateCounters();
-  }
-  
-  
+    }
+    
   function createStatRow(stat) {
       const row = document.createElement("div");
       row.className = "stat-row";
