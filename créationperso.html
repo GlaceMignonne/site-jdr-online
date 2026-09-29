@@ -1533,34 +1533,55 @@ if (!user) {
   };
 
   const STAT_GROUPS = {
-  "PHYSIQUE": [
-    "Force",
-    "Résistance"
-  ],
+      "PHYSIQUE": [
+        "Force",
+        "Résistance"
+      ],
 
-  "DEXTÉRITÉ": [
-    "Furtivité",
-    "Agilité"
-  ],
+      "DEXTÉRITÉ": [
+        "Furtivité",
+        "Agilité"
+      ],
 
-  "ESPRIT": [
-    "Intelligence",
-    "Éloquence"
-  ],
+      "ESPRIT": [
+        "Intelligence",
+        "Éloquence"
+      ],
 
-  "SURVIE": [
-    "Perception",
-    "Improvisation"
-  ],
+      "SURVIE": [
+        "Perception",
+        "Improvisation"
+      ],
 
-  "ARMES": [
-    "Armes blanches",
-    "Armes contondantes",
-    "Armes à distance"
-  ]
-};
+      "ARMES": [
+        "Armes blanches",
+        "Armes contondantes",
+        "Armes à distance"
+      ]
+    };
 
-const ALL_STATS = Object.values(STAT_GROUPS).flat();
+const ALL_STATS = [
+  "PHYSIQUE",
+  "Force",
+  "Résistance",
+
+  "DEXTÉRITÉ",
+  "Furtivité",
+  "Agilité",
+
+  "ESPRIT",
+  "Intelligence",
+  "Éloquence",
+
+  "SURVIE",
+  "Perception",
+  "Improvisation",
+
+  "ARMES",
+  "Armes blanches",
+  "Armes contondantes",
+  "Armes à distance"
+];
   
   /* =========================================================
      ETAT DU PERSONNAGE
