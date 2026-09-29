@@ -1869,55 +1869,51 @@ const ALL_STATS = [
   ).addEventListener(
       "change",
       event => {
-  
+
           const file =
               event.target.files[0];
-  
-  
+
           if (!file) {
               return;
           }
-  
-  
+
+          // On garde le vrai fichier pour Supabase Storage
+          portraitFile = file;
+
+          // Prévisualisation dans la fiche
           const reader =
               new FileReader();
-  
-  
+
           reader.onload =
               () => {
-  
+
                   portraitData =
                       reader.result;
-  
-  
+
                   const image =
                       document.getElementById(
                           "portrait"
                       );
-  
-  
+
                   image.src =
                       portraitData;
-  
-  
+
                   image.classList.remove(
                       "hidden"
                   );
-  
-  
+
                   document.getElementById(
                       "portraitInput"
                   ).classList.add(
                       "hidden"
                   );
-  
+
               };
-  
-  
+
           reader.readAsDataURL(
               file
           );
-  
+
       }
   );
   
