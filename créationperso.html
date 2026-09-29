@@ -2169,25 +2169,17 @@ const ALL_STATS = [
       portraitData =
           character.portraitData || null;
   
-  
-      commanderIsLeader =
-          character.commanderIsLeader || false;
-  
-  
       document.getElementById(
           "equipment"
       ).value =
           character.equipment || "";
-  
   
       document.getElementById(
           "lore"
       ).value =
           character.lore || "";
   
-  
       selected.clear();
-  
   
       /*
        * Portrait
@@ -2237,35 +2229,6 @@ const ALL_STATS = [
       renderTalents();
   
       renderHearts();
-  
-      updateCommander();
-  
-  
-      const commanderCard =
-          document.getElementById(
-              "commanderCard"
-          );
-  
-  
-      if (
-          character.class ===
-          "commandant"
-      ) {
-  
-          commanderCard.classList.remove(
-              "hidden"
-          );
-  
-      } else {
-  
-          commanderCard.classList.add(
-              "hidden"
-          );
-  
-      }
-  
-  
-      updateTarget();
   
   }
   
