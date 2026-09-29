@@ -1668,52 +1668,59 @@ const ALL_STATS = [
       });
     }
     
-  function createStatRow(stat) {
-      const row = document.createElement("div");
-      row.className = "stat-row";
+  function createStatRow(stat, isMainStat = false) {
+    const row = document.createElement("div");
 
-      if (selected.has(`stat:${stat}`)) {
-        row.classList.add("selected");
-      }
+    row.className = "stat-row";
 
-      const name = document.createElement("div");
-      name.className = "stat-name";
-      name.textContent = stat;
+    if (isMainStat) {
+      row.classList.add("main-stat");
+    }
 
-      const bonus = getClassBonus(stat);
+    if (selected.has(`stat:${stat}`)) {
+      row.classList.add("selected");
+    }
 
-      const bonusDisplay = document.createElement("span");
-      bonusDisplay.className = "stat-bonus";
+    const name = document.createElement("div");
 
-      if (bonus > 0) {
-        bonusDisplay.textContent = `+${bonus}`;
-      }
+    name.className = "stat-name";
+    name.textContent = stat;
 
-      const input = document.createElement("input");
-      input.type = "number";
-      input.min = "0";
-      input.value = stats[stat] || 0;
+    const bonus = getClassBonus(stat);
 
-      input.addEventListener("click", event => {
-        event.stopPropagation();
-      });
+    const bonusDisplay = document.createElement("span");
 
-      input.addEventListener("input", event => {
-        stats[stat] = Number(event.target.value) || 0;
+    bonusDisplay.className = "stat-bonus";
 
-        updateCounters();
-        updateTarget();
-      });
+    if (bonus > 0) {
+      bonusDisplay.textContent = `+${bonus}`;
+    }
 
-      row.addEventListener("click", () => {
-        toggleSelection(`stat:${stat}`);
-      });
+    const input = document.createElement("input");
 
-      row.appendChild(name);
-      row.appendChild(bonusDisplay);
-      row.appendChild(input);
+    input.type = "number";
+    input.min = "0";
+    input.value = stats[stat] || 0;
 
-      return row;
+    input.addEventListener("click", event => {
+      event.stopPropagation();
+    });
+
+    input.addEventListener("input", event => {
+      stats[stat] = Number(event.target.value) || 0;
+
+      updateTarget();
+    });
+
+    row.addEventListener("click", () => {
+      toggleSelection(`stat:${stat}`);
+    });
+
+    row.appendChild(name);
+    row.appendChild(bonusDisplay);
+    row.appendChild(input);
+
+    return row;
   }
   
   /* =========================================================
