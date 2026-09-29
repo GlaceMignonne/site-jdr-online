@@ -2136,7 +2136,40 @@ async function saveCharacterToSupabase(character) {
 
       }
   );
-    
+
+  document.getElementById(
+      "returnLobby"
+  ).addEventListener(
+      "click",
+      async () => {
+
+          const character =
+              getCharacterData();
+
+          const saved =
+              await saveCharacterToSupabase(
+                  character
+              );
+
+          if (!saved) {
+              return;
+          }
+
+          const bank =
+              getCharacterBank();
+
+          bank[character.id] =
+              character;
+
+          saveCharacterBank(
+              bank
+          );
+
+          window.location.href =
+              "lobby.html";
+
+      }
+  );
   /* =========================================================
      CHARGER PERSONNAGE
   ========================================================= */
