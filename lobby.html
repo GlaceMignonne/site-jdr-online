@@ -808,99 +808,90 @@ function updateSelectedCharacterDisplay() {
 }
     
     // =====================================================
-    // CHARGER LA PARTIE
-    // =====================================================
+// CHARGER LA PARTIE
+// =====================================================
+
+        async function loadParty() {
+
+            if (!partyCode) {
+
+                document.getElementById("status").textContent =
+                    "Aucune partie trouvée.";
+
+                return;
+            }
 
 
-    async function loadParty() {
+            const { data, error } =
+                await supabaseClient
+                    .from("parties")
+                    .select("code, mj_name, started")
+                    .eq("code", partyCode)
+                    .single();
 
 
-        if (!partyCode) {
+            if (error) {
+
+                console.error(
+                    "Erreur partie :",
+                    error
+                );
+
+                document.getElementById("status").textContent =
+                    "Impossible de charger la partie.";
+
+                return;
+            }
+
+
+            document.getElementById("partyCode").textContent =
+                data.code;
+
+
+            document.getElementById("mjName").textContent =
+                "MJ : " + data.mj_name;
+
+
+            partyStarted =
+                data.started;
+
+
+            // Si la partie est déjà lancée
+
+            if (partyStarted) {
+
+                goToGame();
+
+                return;
+            }
+
 
             document.getElementById("status").textContent =
-                "Aucune partie trouvée.";
-
-            return;
-
-        }
+                "⏳ En attente du lancement de la partie...";
 
 
-        const { data, error } =
-            await supabaseClient
+            // Afficher la zone MJ
 
-                .from("parties")
+            if (role === "mj") {
 
-                .select("code, mj_name, started")
-
-                .eq("code", partyCode)
-
-                .single();
+                document.getElementById("mjArea").style.display =
+                    "block";
+            }
 
 
-        if (error) {
+            // Charger les joueurs
 
-            console.error(
-                "Erreur partie :",
-                error
-            );
+            await loadPlayers();
 
-            document.getElementById("status").textContent =
-                "Impossible de charger la partie.";
 
-            return;
+            // Charger les personnages du joueur
+
+            if (role === "joueur") {
+
+                await loadMyCharacters();
+            }
 
         }
-
-
-        document.getElementById("partyCode").textContent =
-            data.code;
-
-
-        document.getElementById("mjName").textContent =
-            "MJ : " + data.mj_name;
-
-
-        partyStarted =
-            data.started;
-
-
-        // Si la partie est déjà lancée
-
-        if (partyStarted) {
-
-            goToGame();
-
-            return;
-
-        }
-
-
-        document.getElementById("status").textContent =
-            "⏳ En attente du lancement de la partie...";
-
-
-        // Afficher la zone MJ
-
-        if (role === "mj") {
-
-            document.getElementById("mjArea").style.display =
-                "block";
-
-        }
-
-
-        // Charger les joueurs
-
-        await loadPlayers();
-
-
-        if (role === "joueur") {
-
-            await loadMyCharacters();
-
-        }
-
-     }
 
     // =====================================================
     // CHARGER LES JOUEURS
