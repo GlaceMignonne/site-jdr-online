@@ -1752,47 +1752,6 @@ const ALL_STATS = [
   }
   
   /* =========================================================
-     COMPTEURS
-  ========================================================= */
-  
-  function updateCounters() {
-  
-      let mainTotal = 0;
-  
-      let secondaryTotal = 0;
-  
-  
-      MAIN_STATS.forEach(stat => {
-  
-          mainTotal +=
-              Number(stats[stat]) || 0;
-  
-      });
-  
-  
-      SECONDARY_STATS.forEach(stat => {
-  
-          secondaryTotal +=
-              Number(stats[stat]) || 0;
-  
-      });
-  
-  
-      document.getElementById(
-          "mainTotal"
-      ).textContent =
-          mainTotal;
-  
-  
-      document.getElementById(
-          "secondaryTotal"
-      ).textContent =
-          secondaryTotal;
-  
-  }
-  
-  
-  /* =========================================================
      TALENTS
   ========================================================= */
   
