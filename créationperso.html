@@ -1766,30 +1766,6 @@ const ALL_STATS = [
      SELECTION
   ========================================================= */
   
-  function toggleSelection(id) {
-  
-      if (selected.has(id)) {
-  
-          selected.delete(id);
-  
-      } else {
-  
-          selected.add(id);
-  
-      }
-  
-  
-      renderStats();
-  
-      renderTalents();
-  
-      updateSelectionDisplay();
-  
-      updateTarget();
-  
-  }
-  
-  
   function updateSelectionDisplay() {
   
       const container =
