@@ -1683,34 +1683,6 @@ const ALL_STATS = [
   
       }
   
-  
-      selected = new Set(
-          [...selected].filter(
-              key => {
-  
-                  if (
-                      !key.startsWith(
-                          "talent:"
-                      )
-                  ) {
-                      return true;
-                  }
-  
-                  const index =
-                      Number(
-                          key.split(":")[1]
-                      );
-  
-                  return (
-                      talents[index] &&
-                      !talents[index].classGranted
-                  );
-  
-              }
-          )
-      );
-  
-  
       renderTalents();
   
   }
