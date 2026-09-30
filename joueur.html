@@ -1760,18 +1760,45 @@ async function loadPlayerCharacter() {
     let mainStats = {};
     let secondaryStats = {};
 
+    const mainStatNames = [
+        "PHYSIQUE",
+        "DEXTERITE",
+        "ESPRIT",
+        "SURVIE",
+        "ARMES"
+    ];
+
+    const secondaryStatNames = [
+        "Force",
+        "Résistance",
+        "Agilité",
+        "Furtivité",
+        "Intelligence",
+        "Éloquence",
+        "Perception",
+        "Improvisation",
+        "Armes blanches",
+        "Armes contondantes",
+        "Armes à distance"
+    ];
+
     console.log("=== STATS BRUTES ===", stats);
 
-    console.log("===== VERIFICATION STATS =====");
-    console.log("STATS COMPLETES :", stats);
-    console.log("MAIN :", mainStats);
-    console.log("SECONDARY :", secondaryStats);
-    console.log("DEXTERITE :", stats["DEXTERITE"]);
-    console.log("DEXTÉRITÉ :", stats["DEXTÉRITÉ"]);
-    console.log("ELOQUENCE :", stats["Eloquence"]);
-    console.log("ÉLOQUENCE :", stats["Éloquence"]);
-    console.log("==============================");
+    // Séparation des statistiques
+    Object.entries(stats).forEach(([name, value]) => {
 
+        if (mainStatNames.includes(name)) {
+        mainStats[name] = value;
+        }
+
+        if (secondaryStatNames.includes(name)) {
+        secondaryStats[name] = value;
+        }
+
+    });
+
+    console.log("=== STATS PRINCIPALES ===", mainStats);
+    console.log("=== STATS SECONDAIRES ===", secondaryStats);
 
     /* =====================================================
        SI SUPABASE UTILISE main / secondary
