@@ -2557,16 +2557,16 @@
 
               <div class="player-info">
 
-                  <div class="player-name">
-                      ${escapeHTML(
-                          player.character_name ||
-                          "Personnage non sélectionné"
-                      )}
-                  </div>
+                <div class="player-name">
+                    ${escapeHTML(
+                        player.character?.name ||
+                        "Personnage non sélectionné"
+                    )}
+                </div>
 
-                  <div class="player-character">
-                      ${escapeHTML(player.name || "Joueur")}
-                  </div>
+                <div class="player-character">
+                    ${escapeHTML(player.name || "Joueur")}
+                </div>
 
               </div>
 
