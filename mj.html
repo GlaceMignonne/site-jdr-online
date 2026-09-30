@@ -2383,17 +2383,21 @@
       console.log("Code de partie :", partyCode);
 
       // 1. Récupérer les joueurs de la partie
-      const { data: playerData, error: playerError } = await supabaseClient
-          .from("players")
+      const { data, error } = await supabaseClient
+          .from("characters")
           .select(`
               id,
               name,
-              character_name,
-              connected,
-              ready,
-              user_id,
-              character_id
+              age,
+              class,
+              stats,
+              talents,
+              hearts,
+              portrait_url,
+              inventory
           `)
+        
+          .in("id", characterIds);
           .eq("party_code", partyCode)
           .eq("connected", true)
           .order("name");
