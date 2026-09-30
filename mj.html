@@ -2468,8 +2468,10 @@
   
   function renderPlayers() {
       console.log("TEST : renderPlayers()", players);
-      const container =
-          document.getElementById("playersList");
+      
+    const container = document.getElementById("playersList");
+
+    console.log("TEST : playersList =", container);
 
       container.innerHTML = "";
 
