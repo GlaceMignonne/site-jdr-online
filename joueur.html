@@ -41,15 +41,17 @@
   
   .topbar {
       height: 72px;
-      background: #151719;
-      border-bottom: 1px solid var(--border);
-  
-      display: flex;
+
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      justify-content: space-between;
-  
+
       padding: 0 22px;
-  
+
+      background: #151719;
+
+      border-bottom: 1px solid var(--border);
+
       box-shadow: 0 3px 15px rgba(0,0,0,.4);
   }
   
