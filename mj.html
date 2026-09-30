@@ -2655,7 +2655,78 @@
 
       renderPlayers();
   }
-  
+
+  async function changeHeartFromSheet(
+      event,
+      characterId,
+      heartIndex
+  ) {
+
+      event.stopPropagation();
+
+      const player =
+          players.find(
+              p => p.character?.id === characterId
+          );
+
+      if (!player || !player.character) {
+          return;
+      }
+
+      const hearts =
+          player.character.hearts || [];
+
+      const states = [
+          "healthy",
+          "poisoned",
+          "injured"
+      ];
+
+      const current =
+          hearts[heartIndex];
+
+      const index =
+          states.indexOf(current);
+
+      hearts[heartIndex] =
+          states[
+              (index + 1) % states.length
+          ];
+
+      const { error } =
+          await supabaseClient
+              .from("characters")
+              .update({
+                  hearts
+              })
+              .eq("id", characterId);
+
+      if (error) {
+
+          console.error(
+              "Erreur sauvegarde cœur :",
+              error
+          );
+
+          return;
+      }
+
+      player.character.hearts =
+          hearts;
+
+      console.log(
+          "État du cœur sauvegardé :",
+          hearts
+      );
+
+
+      // Rafraîchir la fiche actuellement ouverte
+      openCharacterSheet(player);
+
+      // Rafraîchir la liste
+      renderPlayers();
+  }
+    
   /* =========================================================
      FICHE PERSONNAGE
   ========================================================= */
