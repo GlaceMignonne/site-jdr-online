@@ -2603,222 +2603,399 @@
   }
   
   
-  function changeHeart(event, playerId, heartIndex) {
-  
+  async function changeHeart(event, playerId, heartIndex) {
+
       event.stopPropagation();
-  
-  
-      const player =
-          players.find(
-              p => p.id === playerId
-          );
-  
-  
-      if (!player) return;
-  
-  
-      const current =
-          player.hearts[heartIndex];
-  
-  
+
+      const player = players.find(
+          p => p.id === playerId
+      );
+
+      if (!player || !player.character) return;
+
+      const current = player.character.hearts?.[heartIndex];
+
       const states = [
-  
           "healthy",
           "poisoned",
           "injured"
-  
       ];
-  
-  
-      const index =
-          states.indexOf(current);
-  
-  
-      player.hearts[heartIndex] =
-          states[
-              (index + 1) % states.length
-          ];
-  
-  
+
+      const index = states.indexOf(current);
+
+      const newState =
+          states[(index + 1) % states.length];
+
+      // Modifier localement
+      player.character.hearts[heartIndex] = newState;
+
+      // Enregistrer immédiatement dans Supabase
+      const { error } = await supabaseClient
+          .from("characters")
+          .update({
+              hearts: player.character.hearts
+          })
+          .eq("id", player.character.id);
+
+      if (error) {
+
+          console.error(
+              "Erreur lors de la sauvegarde des cœurs :",
+              error
+          );
+
+          return;
+      }
+
+      console.log(
+          "Cœur modifié et sauvegardé :",
+          player.character.name,
+          player.character.hearts
+      );
+
       renderPlayers();
-  
   }
-  
   
   /* =========================================================
      FICHE PERSONNAGE
   ========================================================= */
   
-  function openCharacterSheet(player) {
-  
+ function openCharacterSheet(player) {
+
       const modal =
           document.getElementById("characterModal");
-  
-  
+
+      const character = player.character;
+
+      if (!character) {
+          console.error(
+              "Aucun personnage associé à ce joueur."
+          );
+          return;
+      }
+
       document.getElementById(
           "modalCharacterName"
-      ).textContent =
-          player.character;
-  
-  
+      ).textContent = character.name;
+
+      const stats =
+          character.stats || {};
+
+      const talents =
+          Array.isArray(character.talents)
+              ? character.talents
+              : [];
+
+      const hearts =
+          Array.isArray(character.hearts)
+              ? character.hearts
+              : [];
+
+      const inventory =
+          character.inventory || "";
+
       const statsHTML =
-          Object.entries(player.stats)
-              .map(
-                  ([name, value]) => `
-  
-                      <div class="stat-row">
-  
-                          <span>${name}</span>
-  
-                          <span class="stat-value">
-                              ${value}
-                          </span>
-  
-                      </div>
-  
-                  `
-              )
+          Object.entries(stats)
+              .map(([name, value]) => `
+                  <div class="stat-row">
+
+                      <input
+                          class="sheet-edit-name"
+                          value="${escapeHTML(name)}"
+                          readonly
+                      >
+
+                      <input
+                          class="sheet-edit-value"
+                          data-stat="${escapeHTML(name)}"
+                          value="${escapeHTML(String(value))}"
+                      >
+
+                  </div>
+              `)
               .join("");
-  
-  
-      const secondaryHTML =
-          Object.entries(player.secondary)
-              .map(
-                  ([name, value]) => `
-  
-                      <div class="stat-row">
-  
-                          <span>${name}</span>
-  
-                          <span class="stat-value">
-                              ${value}
-                          </span>
-  
-                      </div>
-  
-                  `
-              )
-              .join("");
-  
-  
+
       const talentsHTML =
-          player.talents
-              .map(
-                  talent => `
-  
-                      <span class="sheet-talent">
-                          ${talent}
-                      </span>
-  
-                  `
-              )
+          talents
+              .map((talent, index) => `
+                  <div class="stat-row">
+
+                      <input
+                          class="sheet-edit-value"
+                          data-talent="${index}"
+                          value="${escapeHTML(talent)}"
+                      >
+
+                  </div>
+              `)
               .join("");
-  
-  
-      const equipmentHTML =
-          player.equipment
-              .map(
-                  item => `
-  
-                      <div class="stat-row">
-                          <span>${item}</span>
-                      </div>
-  
-                  `
-              )
+
+      const heartsHTML =
+          hearts
+              .map((state, index) => `
+                  <button
+                      class="sheet-heart"
+                      type="button"
+                      onclick="
+                          changeHeartFromSheet(
+                              event,
+                              '${character.id}',
+                              ${index}
+                          )
+                      "
+                  >
+                      ${getHeartIcon(state)}
+                  </button>
+              `)
               .join("");
-  
-  
+
       document.getElementById(
           "characterSheet"
       ).innerHTML = `
-  
+
           <div class="character-header">
-  
+
               <div class="character-portrait">
-                  ${player.avatar}
+
+                  ${
+                      character.portrait_url
+                      ? `<img
+                          src="${escapeHTML(character.portrait_url)}"
+                          alt="Portrait"
+                      >`
+                      : "👤"
+                  }
+
               </div>
-  
+
               <div class="character-main-info">
-  
-                  <h3>
-                      ${player.character}
-                  </h3>
-  
+
+                  <input
+                      class="sheet-title-input"
+                      id="sheet-name"
+                      value="${escapeHTML(character.name || "")}"
+                  >
+
                   <p>
-                      Joueur : ${player.player}
+                      Joueur :
+                      <strong>
+                          ${escapeHTML(player.name || "")}
+                      </strong>
                   </p>
+
+                  <label>
+                      Âge
+                      <input
+                          id="sheet-age"
+                          type="number"
+                          value="${character.age ?? ""}"
+                      >
+                  </label>
   
-                  <p>
-                      Classe : ${player.className}
-                  </p>
-  
-                  <p>
-                      État :
-                      ${player.hearts.map(
-                          state => getHeartIcon(state)
-                      ).join(" ")}
-                  </p>
-  
+                  <label>
+                      Classe
+                      <input
+                          id="sheet-class"
+                          value="${escapeHTML(character.class || "")}"
+                      >
+                  </label>
+
+                  <div class="sheet-hearts">
+
+                      <strong>État :</strong>
+
+                      <div>
+                          ${heartsHTML}
+                      </div>
+
+                  </div>
+
               </div>
-  
+
           </div>
-  
-  
+
+
           <div class="sheet-grid">
-  
+
+
               <div class="sheet-box">
-  
-                  <h4>
-                      Caractéristiques
-                  </h4>
-  
+
+                  <h4> Caractéristiques </h4>
+
                   ${statsHTML}
-  
+
               </div>
-  
-  
+
+
               <div class="sheet-box">
-  
-                  <h4>
-                      Secondaires
-                  </h4>
-  
-                  ${secondaryHTML}
-  
-              </div>
-  
-  
-              <div class="sheet-box">
-  
-                  <h4>
-                      Talents
-                  </h4>
-  
+
+                  <h4> Talents </h4>
+
                   ${talentsHTML}
-  
+
               </div>
-  
-  
+
+
               <div class="sheet-box">
-  
-                  <h4>
-                      Équipement
-                  </h4>
-  
-                  ${equipmentHTML}
-  
+
+                  <h4> Équipement  </h4>
+
+                  <textarea
+                      id="sheet-inventory"
+                      class="sheet-textarea"
+                  >${escapeHTML(inventory)}</textarea>
+
               </div>
-  
+
           </div>
-  
+
+            <div class="sheet-actions">
+
+              <button
+                  class="save-character-btn"
+                  onclick="saveCharacterFromSheet('${character.id}')"
+              >
+                  Enregistrer les modifications
+              </button>
+
+          </div>
       `;
-  
-  
+
       modal.classList.add("active");
-  
   }
+
+  async function saveCharacterFromSheet(characterId) {
+
+      const character =
+          players.find(
+              p => p.character?.id === characterId
+          )?.character;
+
+      if (!character) return;
+
+
+      // Nom
+      const name =
+          document.getElementById(
+              "sheet-name"
+          ).value.trim();
+
+      // Âge
+      const ageValue =
+          document.getElementById(
+              "sheet-age"
+          ).value;
+
+      const age =
+          ageValue === ""
+              ? null
+              : Number(ageValue);
+
+      // Classe
+      const className =
+          document.getElementById(
+              "sheet-class"
+          ).value.trim();
+
+      // Inventaire
+      const inventory =
+          document.getElementById(
+              "sheet-inventory"
+          ).value;
+
+      // Statistiques
+      const newStats = {};
+
+      document
+          .querySelectorAll("[data-stat]")
+          .forEach(input => {
+
+              const statName =
+                  input.dataset.stat;
+
+              const value =
+                  input.value;
+
+              const numberValue =
+                  Number(value);
+
+              newStats[statName] =
+                  value !== "" &&
+                  !Number.isNaN(numberValue)
+                      ? numberValue
+                      : value;
+          });
+
+      // Talents
+      const newTalents = [];
+
+      document
+          .querySelectorAll("[data-talent]")
+          .forEach(input => {
+
+              const value =
+                  input.value.trim();
+
+              if (value !== "") {
+                  newTalents.push(value);
+              }
+          });
+
+      const { data, error } =
+          await supabaseClient
+              .from("characters")
+              .update({
+
+                  name,
+                  age,
+                  class: className,
+                  stats: newStats,
+                  talents: newTalents,
+                  inventory
+
+              })
+              .eq("id", characterId)
+              .select()
+              .single();
+
+
+      if (error) {
   
+          console.error(
+              "Erreur lors de la sauvegarde du personnage :",
+              error
+          );
+
+          alert(
+              "Erreur lors de l'enregistrement du personnage."
+          );
+
+          return;
+      }
+
+      // Mettre à jour notre copie locale
+      const player =
+          players.find(
+              p => p.character?.id === characterId
+          );
+
+      if (player) {
+          player.character = data;
+      }
+
+
+      console.log(
+          "Personnage sauvegardé :",
+          data
+      );
+
+      // Actualiser la liste des joueurs
+      renderPlayers();
+
+      alert(
+          "Personnage enregistré."
+      );
+  }
   
   function closeCharacterModal() {
   
