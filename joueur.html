@@ -1580,15 +1580,28 @@ async function loadPlayerCharacter() {
        RÉCUPÉRATION DU JOUEUR
     ===================================================== */
 
+    const playerId =
+        localStorage.getItem("jdr_player_id");
+
+    if (!playerId) {
+
+        alert(
+            "Impossible de retrouver ton joueur dans la partie."
+        );
+
+        window.location.href = "lobby.html";
+
+        return false;
+    }
+
     const {
         data: playerData,
         error: playerError
     } = await supabaseClient
         .from("players")
         .select("character_id")
-        .eq("user_id", user.id)
+        .eq("id", playerId)
         .maybeSingle();
-
 
     if (playerError) {
 
@@ -1613,7 +1626,6 @@ async function loadPlayerCharacter() {
 
         return false;
     }
-
 
     /* =====================================================
        RÉCUPÉRATION DU PERSONNAGE
