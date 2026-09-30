@@ -2373,11 +2373,14 @@
   let players = [];
 
   async function loadPlayers() {
+      console.log("TEST : loadPlayers() est appelée");
 
       if (!partyCode) {
           console.error("Aucun code de partie trouvé.");
           return;
       }
+
+      console.log("Code de partie :", partyCode);
 
       const { data, error } = await supabaseClient
           .from("players")
@@ -2394,11 +2397,11 @@
           .eq("connected", true)
           .order("name");
 
+      console.log("Résultat Supabase :", data);
+      console.log("Erreur Supabase :", error);
+
       if (error) {
-          console.error(
-              "Erreur lors du chargement des joueurs :",
-              error
-          );
+          console.error("Erreur lors du chargement des joueurs :", error);
           return;
       }
 
