@@ -1740,43 +1740,80 @@ async function loadPlayerCharacter() {
        CONVERSION DES DONNÉES
     ===================================================== */
 
-    let stats =
-        character.stats || {};
+    let stats = character.stats || {};
 
     let mainStats = {};
     let secondaryStats = {};
 
-    /*
-       Si les statistiques sont déjà séparées
-       en main / secondary
-    */
+    console.log("=== STATS BRUTES ===", stats);
+
+
+    /* =====================================================
+       SI SUPABASE UTILISE main / secondary
+    ===================================================== */
 
     if (
         stats.main &&
         typeof stats.main === "object"
     ) {
 
-        mainStats =
-            stats.main;
+        mainStats = stats.main;
 
-        secondaryStats =
-            stats.secondary || {};
+        secondaryStats = stats.secondary || {};
 
-        console.log("=== STATS BRUTES ===", stats);
-        console.log("=== STATS PRINCIPALES ===", mainStats);
-        console.log("=== STATS SECONDAIRES ===", secondaryStats);
-      
-    } else {
-
-        /*
-           Sinon on considère que le contenu
-           est directement la liste des stats.
-        */
-
-        mainStats =
-            stats;
     }
 
+
+    /* =====================================================
+       SINON : LES STATS SONT DIRECTEMENT DANS stats
+    ===================================================== */
+
+    else {
+
+        const mainNames = [
+            "PHYSIQUE",
+            "DEXTERITE",
+            "ESPRIT",
+            "SURVIE",
+            "ARMES"
+        ];
+
+        const secondaryNames = [
+            "Force",
+            "Résistance",
+            "Agilité",
+            "Furtivité",
+            "Intelligence",
+            "Eloquence",
+            "Perception",
+            "Improvisation",
+            "Armes blanches",
+            "Armes contondantes",
+            "Armes à distance"
+        ];
+
+
+        Object.entries(stats).forEach(([name, value]) => {
+
+            if (mainNames.includes(name)) {
+
+                mainStats[name] = value;
+
+            }
+
+            else if (secondaryNames.includes(name)) {
+
+                secondaryStats[name] = value;
+
+            }
+
+        });
+
+    }
+
+
+    console.log("=== STATS PRINCIPALES ===", mainStats);
+    console.log("=== STATS SECONDAIRES ===", secondaryStats);
 
     /* =====================================================
        TALENTS
