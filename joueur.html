@@ -1966,7 +1966,35 @@ async function loadPlayerCharacter() {
   /* =========================================================
      STATS
   ========================================================= */
-  
+
+  const MAIN_STAT_ORDER = [
+      "PHYSIQUE",
+      "DEXTERITE",
+      "ESPRIT",
+      "SURVIE",
+      "ARMES"
+  ];
+
+  const SECONDARY_STAT_ORDER = [
+      "Force",
+      "Résistance",
+      "Agilité",
+      "Furtivité",
+      "Intelligence",
+      "Eloquence",
+      "Perception",
+      "Improvisation",
+      "Armes blanches",
+      "Armes contondantes",
+      "Armes à distance"
+  ];
+
+  function getOrderedEntries(obj, order) {
+      return order
+          .filter(key => Object.prototype.hasOwnProperty.call(obj, key))
+          .map(key => [key, obj[key]]);
+  }
+    
   function renderStats() {
   
       const container =
