@@ -2002,8 +2002,7 @@ async function loadPlayerCharacter() {
   
       container.innerHTML = "";
   
-      Object.entries(player.mainStats).forEach(
-          ([name, value]) => {
+      getOrderedEntries(player.mainStats, MAIN_STAT_ORDER).forEach(([name, value]) => {
   
               const div = document.createElement("div");
   
@@ -2051,9 +2050,7 @@ async function loadPlayerCharacter() {
           secondaryTitle
       );
   
-  
-      Object.entries(player.secondaryStats).forEach(
-          ([name, value]) => {
+      getOrderedEntries(player.secondaryStats, SECONDARY_STAT_ORDER).forEach(([name, value]) => {
   
               const div = document.createElement("div");
   
