@@ -2382,7 +2382,8 @@
 
       console.log("Code de partie :", partyCode);
 
-      const { data, error } = await supabaseClient
+      // 1. Récupérer les joueurs de la partie
+      const { data: playerData, error: playerError } = await supabaseClient
           .from("players")
           .select(`
               id,
@@ -2397,20 +2398,59 @@
           .eq("connected", true)
           .order("name");
 
-      console.log("Résultat Supabase :", data);
-      console.log("Erreur Supabase :", error);
+      console.log("Résultat Supabase joueurs :", playerData);
+      console.log("Erreur Supabase joueurs :", playerError);
 
-      if (error) {
-          console.error("Erreur lors du chargement des joueurs :", error);
+      if (playerError) {
+          console.error("Erreur lors du chargement des joueurs :", playerError);
           return;
       }
 
-      players = data || [];
+      const playerRows = playerData || [];
 
-      console.log("Joueurs de la partie :", players);
+      // 2. Récupérer les personnages sélectionnés
+      const characterIds = playerRows
+          .map(player => player.character_id)
+          .filter(Boolean);
 
-      renderPlayers();
-  }
+      let characterRows = [];
+
+      if (characterIds.length > 0) {
+          const { data, error } = await supabaseClient
+              .from("characters")
+              .select(`
+                  id,
+                 name,
+                 class,
+                 portrait_url,
+                 hearts
+             `)
+             .in("id", characterIds);
+
+         if (error) {
+             console.error("Erreur lors du chargement des personnages :", error);
+         } else {
+             characterRows = data || [];
+         }
+     }
+
+     // 3. Associer chaque personnage à son joueur
+     players = playerRows.map(player => {
+
+         const character = characterRows.find(
+             character => character.id === player.character_id
+         );
+
+         return {
+             ...player,
+             character: character || null
+         };
+     });
+
+     console.log("Joueurs avec leurs personnages :", players);
+
+     renderPlayers();
+ }
   
   /* =========================================================
      VARIABLES CARTE
