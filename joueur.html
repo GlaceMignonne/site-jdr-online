@@ -1996,94 +1996,119 @@ async function loadPlayerCharacter() {
   }
     
   function renderStats() {
-  
-      const container =
-          document.getElementById("statList");
-  
-      container.innerHTML = "";
-  
-      getOrderedEntries(player.mainStats, MAIN_STAT_ORDER).forEach(([name, value]) => {
-  
-              const div = document.createElement("div");
-  
-              div.className = "stat";
-  
-              div.dataset.type = "main";
-              div.dataset.name = name;
-              div.dataset.value = value;
-  
-              div.innerHTML = `
-                  <span class="stat-name">
-                      ${name}
-                  </span>
-  
-                  <span class="stat-value">
-                      ${value}
-                  </span>
-              `;
-  
-              div.addEventListener("click", () => {
-  
-                  div.classList.toggle("selected");
-  
-                  updateTarget();
-  
-              });
-  
-              container.appendChild(div);
-  
-          }
-      );
-  
-  
-      /* SECONDARY */
-  
-      const secondaryTitle =
-          document.createElement("div");
-  
-      secondaryTitle.className = "section-title";
-  
-      secondaryTitle.innerText =
-          "Caractéristiques secondaires";
-  
-      container.parentElement.appendChild(
-          secondaryTitle
-      );
-  
-      getOrderedEntries(player.secondaryStats, SECONDARY_STAT_ORDER).forEach(([name, value]) => {
-  
-              const div = document.createElement("div");
-  
-              div.className = "stat";
-  
-              div.dataset.type = "secondary";
-              div.dataset.name = name;
-              div.dataset.value = value;
-  
-              div.innerHTML = `
-                  <span class="stat-name">
-                      ${name}
-                  </span>
-  
-                  <span class="stat-value">
-                      ${value}
-                  </span>
-              `;
-  
-              div.addEventListener("click", () => {
-  
-                  div.classList.toggle("selected");
-  
-                  updateTarget();
-  
-              });
-  
-              container.appendChild(div);
-  
-          }
-      );
-  
-  }
+
+    const container = document.getElementById("statList");
+
+    container.innerHTML = "";
+
+    const groups = [
+        {
+            main: "PHYSIQUE",
+            secondary: ["Force", "Résistance"]
+        },
+        {
+            main: "DEXTERITE",
+            secondary: ["Agilité", "Furtivité"]
+        },
+        {
+            main: "ESPRIT",
+            secondary: ["Intelligence", "Eloquence"]
+        },
+        {
+            main: "SURVIE",
+            secondary: ["Perception", "Improvisation"]
+        },
+        {
+            main: "ARMES",
+            secondary: ["Armes blanches", "Armes contondantes", "Armes à distance"]
+        }
+    ];
+
+    groups.forEach(group => {
+
+        // =========================
+        // STAT PRINCIPALE
+        // =========================
+
+        if (Object.prototype.hasOwnProperty.call(player.mainStats, group.main)) {
+
+            const value = player.mainStats[group.main];
+
+            const div = document.createElement("div");
+
+            div.className = "stat";
+
+            div.dataset.type = "main";
+            div.dataset.name = group.main;
+            div.dataset.value = value;
+
+            div.innerHTML = `
+                <span class="stat-name">
+                    ${group.main}
+                </span>
+
+                <span class="stat-value">
+                    ${value}
+                </span>
+            `;
+
+            div.addEventListener("click", () => {
+
+                div.classList.toggle("selected");
+
+                updateTarget();
+
+            });
+
+            container.appendChild(div);
+        }
+
+
+        // =========================
+        // STATS SECONDAIRES
+        // =========================
+
+        group.secondary.forEach(statName => {
+
+            if (!Object.prototype.hasOwnProperty.call(player.secondaryStats, statName)) {
+                return;
+            }
+
+            const value = player.secondaryStats[statName];
+
+            const div = document.createElement("div");
+
+            div.className = "stat";
+
+            div.dataset.type = "secondary";
+            div.dataset.name = statName;
+            div.dataset.value = value;
+
+            div.innerHTML = `
+                <span class="stat-name">
+                    ${statName}
+                </span>
+
+                <span class="stat-value">
+                    ${value}
+                </span>
+            `;
+
+            div.addEventListener("click", () => {
+
+                div.classList.toggle("selected");
+
+                updateTarget();
+
+            });
+
+            container.appendChild(div);
+
+        });
+
+    });
+
+}
   
   
   /* =========================================================
