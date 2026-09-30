@@ -2628,23 +2628,4 @@ async function loadPlayerCharacter() {
   </body>
   </html>
   <script>
-    /* Counter animation */
-    document.querySelectorAll('.n[data-to]').forEach(el => {
-      const t = +el.dataset.to,
-        step = t / 45;
-      let c = 0;
-      const tm = setInterval(() => {
-        c = Math.min(c + step, t);
-        el.textContent = Math.floor(c);
-        if (c >= t) clearInterval(tm);
-      }, 25);
-    });
-    
-    function go() {
-      window.parent.document.querySelector('.tab-btn[data-tab="html"]')?.click();
-      window.parent.document.querySelector('.CodeMirror textarea')?.focus();
-    }
-    
-  </script>
-</body>
-</html>
+  
