@@ -1560,14 +1560,29 @@
 
 async function loadPlayerCharacter() {
 
+    console.log("=== CHARGEMENT PERSONNAGE ===");
+
+    /* =====================================================
+       UTILISATEUR CONNECTÉ
+    ===================================================== */
+
     const {
         data: { user },
         error: userError
     } = await supabaseClient.auth.getUser();
 
+    console.log("Utilisateur connecté :", user);
+
     if (userError || !user) {
 
-        alert("Tu dois être connecté pour accéder à ton personnage.");
+        console.error(
+            "Erreur utilisateur :",
+            userError
+        );
+
+        alert(
+            "Tu dois être connecté pour accéder à ton personnage."
+        );
 
         window.location.href = "lobby.html";
 
@@ -1576,11 +1591,16 @@ async function loadPlayerCharacter() {
 
 
     /* =====================================================
-       RÉCUPÉRATION DU JOUEUR
+       ID DU JOUEUR DANS LA PARTIE
     ===================================================== */
 
     const playerId =
         localStorage.getItem("jdr_player_id");
+
+    console.log(
+        "jdr_player_id :",
+        playerId
+    );
 
     if (!playerId) {
 
@@ -1593,14 +1613,24 @@ async function loadPlayerCharacter() {
         return false;
     }
 
+
+    /* =====================================================
+       RÉCUPÉRATION DE LA LIGNE PLAYERS
+    ===================================================== */
+
     const {
         data: playerData,
         error: playerError
     } = await supabaseClient
         .from("players")
-        .select("character_id")
+        .select("id, character_id")
         .eq("id", playerId)
         .maybeSingle();
+
+    console.log(
+        "Données du joueur :",
+        playerData
+    );
 
     if (playerError) {
 
@@ -1609,22 +1639,49 @@ async function loadPlayerCharacter() {
             playerError
         );
 
-        alert("Impossible de récupérer tes données joueur.");
+        alert(
+            "Erreur lors de la récupération du joueur."
+        );
 
         return false;
     }
 
 
-    if (!playerData || !playerData.character_id) {
+    if (!playerData) {
+
+        console.error(
+            "Aucune ligne players trouvée avec l'id :",
+            playerId
+        );
 
         alert(
-            "Aucun personnage sélectionné. Retour au lobby."
+            "Ton joueur n'a pas été retrouvé dans la partie."
+        );
+
+        return false;
+    }
+
+
+    /* =====================================================
+       PERSONNAGE SÉLECTIONNÉ
+    ===================================================== */
+
+    console.log(
+        "character_id :",
+        playerData.character_id
+    );
+
+    if (!playerData.character_id) {
+
+        alert(
+            "Aucun personnage sélectionné dans le lobby."
         );
 
         window.location.href = "lobby.html";
 
         return false;
     }
+
 
     /* =====================================================
        RÉCUPÉRATION DU PERSONNAGE
@@ -1637,8 +1694,12 @@ async function loadPlayerCharacter() {
         .from("characters")
         .select("*")
         .eq("id", playerData.character_id)
-        .eq("player_id", user.id)
         .maybeSingle();
+
+    console.log(
+        "Personnage récupéré depuis Supabase :",
+        character
+    );
 
 
     if (characterError) {
@@ -1649,7 +1710,7 @@ async function loadPlayerCharacter() {
         );
 
         alert(
-            "Impossible de récupérer ton personnage."
+            "Erreur lors de la récupération du personnage."
         );
 
         return false;
@@ -1658,61 +1719,185 @@ async function loadPlayerCharacter() {
 
     if (!character) {
 
-        alert(
-            "Le personnage sélectionné est introuvable."
+        console.error(
+            "Aucun personnage trouvé avec l'id :",
+            playerData.character_id
         );
 
-        window.location.href = "lobby.html";
+        alert(
+            "Le personnage sélectionné est introuvable dans Supabase."
+        );
 
         return false;
     }
 
 
     /* =====================================================
-       TRANSFORMATION DES DONNÉES
+       CONVERSION DES DONNÉES
+    ===================================================== */
+
+    let stats =
+        character.stats || {};
+
+    let mainStats = {};
+    let secondaryStats = {};
+
+    /*
+       Si les statistiques sont déjà séparées
+       en main / secondary
+    */
+
+    if (
+        stats.main &&
+        typeof stats.main === "object"
+    ) {
+
+        mainStats =
+            stats.main;
+
+        secondaryStats =
+            stats.secondary || {};
+
+    } else {
+
+        /*
+           Sinon on considère que le contenu
+           est directement la liste des stats.
+        */
+
+        mainStats =
+            stats;
+    }
+
+
+    /* =====================================================
+       TALENTS
+    ===================================================== */
+
+    let talents = {};
+
+    if (
+        Array.isArray(character.talents)
+    ) {
+
+        character.talents.forEach(
+            talent => {
+
+                if (
+                    typeof talent === "string"
+                ) {
+
+                    talents[talent] = 1;
+
+                } else if (
+                    talent &&
+                    typeof talent === "object"
+                ) {
+
+                    const name =
+                        talent.name ||
+                        talent.label ||
+                        "Talent";
+
+                    const value =
+                        Number(
+                            talent.value
+                        ) || 1;
+
+                    talents[name] =
+                        value;
+                }
+
+            }
+        );
+
+    } else if (
+        character.talents &&
+        typeof character.talents === "object"
+    ) {
+
+        talents =
+            character.talents;
+    }
+
+
+    /* =====================================================
+       INVENTAIRE
+    ===================================================== */
+
+    let equipment = [];
+
+    if (
+        Array.isArray(character.inventory)
+    ) {
+
+        equipment =
+            character.inventory;
+
+    } else if (
+        typeof character.inventory === "string"
+    ) {
+
+        equipment =
+            character.inventory
+                .split(",")
+                .map(item => item.trim())
+                .filter(item => item);
+
+    }
+
+
+    /* =====================================================
+       PERSONNAGE FINAL
     ===================================================== */
 
     player = {
 
         name:
-            character.name || "Personnage",
+            character.name ||
+            "Personnage sans nom",
 
         age:
-            Number(character.age) || 0,
+            Number(character.age) ||
+            0,
 
         class:
-            character.class || "Aucune",
+            character.class ||
+            "Aucune",
 
         chance:
-            Number(character.luck) || 0,
+            Number(character.luck) ||
+            0,
 
         hearts:
-            character.hearts || [
-                "healthy",
-                "healthy",
-                "healthy",
-                "healthy"
-            ],
+            Array.isArray(character.hearts)
+                ? character.hearts
+                : [
+                    "healthy",
+                    "healthy",
+                    "healthy",
+                    "healthy"
+                ],
 
         mainStats:
-            character.stats?.main || {},
+            mainStats,
 
         secondaryStats:
-            character.stats?.secondary || {},
+            secondaryStats,
 
         talents:
-            character.talents || {},
+            talents,
 
         equipment:
-            Array.isArray(character.inventory)
-                ? character.inventory
-                : [],
+            equipment,
 
         lore:
-            character.lore || "",
+            character.lore ||
+            "",
 
         portrait_url:
-            character.portrait_url || null,
+            character.portrait_url ||
+            null,
 
         isLeader:
             false
@@ -1721,7 +1906,7 @@ async function loadPlayerCharacter() {
 
 
     /* =====================================================
-       AFFICHAGE DU NOM DANS LE HEADER
+       AFFICHAGE
     ===================================================== */
 
     document.getElementById(
@@ -1737,7 +1922,7 @@ async function loadPlayerCharacter() {
 
 
     console.log(
-        "Personnage chargé :",
+        "=== PERSONNAGE FINAL ===",
         player
     );
 
