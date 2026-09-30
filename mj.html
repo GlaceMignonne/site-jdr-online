@@ -2363,199 +2363,51 @@
   <script>
   
   /* =========================================================
-     DONNÉES DE TEST
+     DONNÉES 
   ========================================================= */
   
-  const players = [
-  
-      {
-  
-          id: 1,
-  
-          player: "Alex",
-  
-          character: "Kael",
-  
-          className: "Éclaireur",
-  
-          avatar: "👤",
-  
-          hearts: [
-              "healthy",
-              "healthy",
-              "healthy",
-              "healthy"
-          ],
-  
-          stats: {
-  
-              Physique: 7,
-              Dextérité: 10,
-              Esprit: 6,
-              Survie: 11,
-              Armes: 6
-  
-          },
-  
-          secondary: {
-  
-              Force: 2,
-              Résistance: 2,
-              Furtivité: 3,
-              Agilité: 3,
-              Intelligence: 1,
-              Éloquence: 0,
-              Perception: 5,
-              Improvisation: 1,
-              "Armes blanches": 1,
-              "Armes contondantes": 0,
-              "Armes à distance": 2
-  
-          },
-  
-          talents: [
-  
-              "Orientation",
-              "Observation"
-  
-          ],
-  
-          equipment: [
-  
-              "Couteau",
-              "Sac à dos",
-              "Lampe"
-  
-          ]
-  
-      },
-  
-  
-      {
-  
-          id: 2,
-  
-          player: "Thomas",
-  
-          character: "Rook",
-  
-          className: "Combattant",
-  
-          avatar: "👤",
-  
-          hearts: [
-              "healthy",
-              "injured",
-              "healthy",
-              "poisoned"
-          ],
-  
-          stats: {
-  
-              Physique: 12,
-              Dextérité: 7,
-              Esprit: 5,
-              Survie: 8,
-              Armes: 8
-  
-          },
-  
-          secondary: {
-  
-              Force: 5,
-              Résistance: 4,
-              Furtivité: 1,
-              Agilité: 2,
-              Intelligence: 0,
-              Éloquence: 0,
-              Perception: 2,
-              Improvisation: 1,
-              "Armes blanches": 4,
-              "Armes contondantes": 3,
-              "Armes à distance": 1
-  
-          },
-  
-          talents: [
-  
-              "Combat rapproché"
-  
-          ],
-  
-          equipment: [
-  
-              "Barre métallique",
-              "Veste renforcée"
-  
-          ]
-  
-      },
-  
-  
-      {
-  
-          id: 3,
-  
-          player: "Sarah",
-  
-          character: "Mira",
-  
-          className: "Médecin",
-  
-          avatar: "👤",
-  
-          hearts: [
-              "healthy",
-              "healthy",
-              "injured",
-              "healthy"
-          ],
-  
-          stats: {
-  
-              Physique: 5,
-              Dextérité: 8,
-              Esprit: 11,
-              Survie: 8,
-              Armes: 8
-  
-          },
-  
-          secondary: {
-  
-              Force: 1,
-              Résistance: 2,
-              Furtivité: 2,
-              Agilité: 3,
-              Intelligence: 4,
-              Éloquence: 2,
-              Perception: 3,
-              Improvisation: 1,
-              "Armes blanches": 0,
-              "Armes contondantes": 0,
-              "Armes à distance": 1
-  
-          },
-  
-          talents: [
-  
-              "Soins (2)",
-              "Premiers secours"
-  
-          ],
-  
-          equipment: [
-  
-              "Trousse médicale",
-              "Bandages",
-              "Médicaments"
-  
-          ]
-  
+  const partyCode = localStorage.getItem("jdr_party_code");
+  const role = localStorage.getItem("jdr_role");
+  const playerId = localStorage.getItem("jdr_player_id");
+
+  let players = [];
+
+  async function loadPlayers() {
+
+      if (!partyCode) {
+          console.error("Aucun code de partie trouvé.");
+          return;
       }
-  
-  ];
-  
+
+      const { data, error } = await supabaseClient
+          .from("players")
+          .select(`
+              id,
+              name,
+              character_name,
+              connected,
+              ready,
+              user_id,
+              character_id
+          `)
+          .eq("party_code", partyCode)
+          .eq("connected", true)
+          .order("name");
+
+      if (error) {
+          console.error(
+              "Erreur lors du chargement des joueurs :",
+              error
+          );
+          return;
+      }
+
+      players = data || [];
+
+      console.log("Joueurs de la partie :", players);
+
+      renderPlayers();
+  }
   
   /* =========================================================
      VARIABLES CARTE
@@ -2594,109 +2446,94 @@
   
   document.addEventListener(
       "DOMContentLoaded",
-      () => {
-  
-          renderPlayers();
-  
+      async () => {
+
           setupMapControls();
-  
           setupFogCanvas();
-  
           setupChat();
-  
           setupDice();
-  
           setupMapUpload();
-  
+
+          await loadPlayers();
+
       }
   );
-  
   
   /* =========================================================
      JOUEURS
   ========================================================= */
   
   function renderPlayers() {
-  
+
       const container =
           document.getElementById("playersList");
-  
+
       container.innerHTML = "";
-  
-  
+
+      if (!players.length) {
+
+          container.innerHTML = `
+              <div class="empty">
+                  Aucun joueur connecté.
+              </div>
+          `;
+
+          document.getElementById("playerCount")
+              .textContent = "0";
+
+          return;
+      }
+
       players.forEach(player => {
-  
+
           const element =
               document.createElement("div");
-  
-          element.className =
-              "player";
-  
-          element.dataset.id =
-              player.id;
-  
-  
+
+          element.className = "player";
+
+          element.dataset.id = player.id;
+
           element.onclick = () => {
-  
-              openCharacterSheet(player);
-  
+
+              console.log(
+                  "Joueur sélectionné :",
+                  player
+              );
+
+              // La fiche personnage viendra à l'étape suivante.
           };
-  
-  
-          const heartsHTML =
-              player.hearts
-                  .map(
-                      (state, index) => {
-  
-                          return `
-                              <span
-                                  class="heart ${state}"
-                                  onclick="changeHeart(event, ${player.id}, ${index})"
-                              >
-                                  ${getHeartIcon(state)}
-                              </span>
-                          `;
-  
-                      }
-                  )
-                  .join("");
-  
-  
+
+
           element.innerHTML = `
-  
+
               <div class="player-avatar">
-                  ${player.avatar}
+                  👤
               </div>
-  
+
               <div class="player-info">
-  
+
                   <div class="player-name">
-                      ${player.character}
+                      ${escapeHTML(
+                          player.character_name ||
+                          "Personnage non sélectionné"
+                      )}
                   </div>
-  
+
                   <div class="player-character">
-                      ${player.player} · ${player.className}
+                      ${escapeHTML(player.name || "Joueur")}
                   </div>
-  
-                  <div class="player-hearts">
-                      ${heartsHTML}
-                  </div>
-  
+
               </div>
-  
-          `;
-  
-  
+
+        `  ;
+
           container.appendChild(element);
-  
+
       });
-  
-  
+
       document.getElementById("playerCount")
           .textContent = players.length;
-  
   }
-  
   
   /* =========================================================
      COEURS
