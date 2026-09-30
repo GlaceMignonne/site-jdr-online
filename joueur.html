@@ -2062,7 +2062,6 @@ async function loadPlayerCharacter() {
           },
           {
               main: "DEXTERITE",
-              aliases: ["DEXTERITE", "DEXTÉRITÉ"],
               secondary: ["Agilité", "Furtivité"]
           },
           {
@@ -2085,17 +2084,32 @@ async function loadPlayerCharacter() {
 
       groups.forEach(group => {
 
-          // =========================
+          // =====================================
           // STAT PRINCIPALE
-          // =========================
-          if (Object.prototype.hasOwnProperty.call(player.mainStats, group.main)) {
+          // =====================================
 
-              const value = player.mainStats[group.main];
+          const mainKey = Object.keys(player.mainStats).find(
+              key =>
+                  key
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
+                      .toUpperCase()
+                  ===
+                  group.main
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
+                      .toUpperCase()
+          );
+
+          if (mainKey) {
+
+              const value = player.mainStats[mainKey];
 
               const div = document.createElement("div");
+
               div.className = "stat main-stat";
               div.dataset.type = "main";
-              div.dataset.name = group.main;
+              div.dataset.name = mainKey;
               div.dataset.value = value;
 
               div.innerHTML = `
@@ -2111,21 +2125,37 @@ async function loadPlayerCharacter() {
               container.appendChild(div);
           }
 
-          // =========================
+
+          // =====================================
           // STATS SECONDAIRES
-          // =========================
+          // =====================================
+
           group.secondary.forEach(statName => {
 
-              if (!Object.prototype.hasOwnProperty.call(player.secondaryStats, statName)) {
+              const secondaryKey = Object.keys(player.secondaryStats).find(
+                  key =>
+                      key
+                          .normalize("NFD")
+                          .replace(/[\u0300-\u036f]/g, "")
+                          .toLowerCase()
+                      ===
+                      statName
+                          .normalize("NFD")
+                          .replace(/[\u0300-\u036f]/g, "")
+                          .toLowerCase()
+              );
+
+              if (!secondaryKey) {
                   return;
               }
 
-              const value = player.secondaryStats[statName];
+              const value = player.secondaryStats[secondaryKey];
 
               const div = document.createElement("div");
+
               div.className = "stat secondary-stat";
               div.dataset.type = "secondary";
-              div.dataset.name = statName;
+              div.dataset.name = secondaryKey;
               div.dataset.value = value;
 
               div.innerHTML = `
