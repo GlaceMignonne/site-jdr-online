@@ -2037,120 +2037,95 @@ async function loadPlayerCharacter() {
   }
     
   function renderStats() {
+      const container = document.getElementById("statList");
+      container.innerHTML = "";
 
-    const container = document.getElementById("statList");
+      const groups = [
+          {
+              main: "PHYSIQUE",
+              secondary: ["Force", "Résistance"]
+          },
+          {
+              main: "DEXTERITE",
+              secondary: ["Agilité", "Furtivité"]
+          },
+          {
+              main: "ESPRIT",
+              secondary: ["Intelligence", "Eloquence"]
+          },
+          {
+              main: "SURVIE",
+              secondary: ["Perception", "Improvisation"]
+          },
+          {
+              main: "ARMES",
+              secondary: [
+                  "Armes blanches",
+                  "Armes contondantes",
+                  "Armes à distance"
+              ]
+          }
+      ];
 
-    container.innerHTML = "";
+      groups.forEach(group => {
 
-    const groups = [
-        {
-            main: "PHYSIQUE",
-            secondary: ["Force", "Résistance"]
-        },
-        {
-            main: "DEXTERITE",
-            secondary: ["Agilité", "Furtivité"]
-        },
-        {
-            main: "ESPRIT",
-            secondary: ["Intelligence", "Eloquence"]
-        },
-        {
-            main: "SURVIE",
-            secondary: ["Perception", "Improvisation"]
-        },
-        {
-            main: "ARMES",
-            secondary: ["Armes blanches", "Armes contondantes", "Armes à distance"]
-        }
-    ];
+          // =========================
+          // STAT PRINCIPALE
+          // =========================
+          if (Object.prototype.hasOwnProperty.call(player.mainStats, group.main)) {
 
-    groups.forEach(group => {
+              const value = player.mainStats[group.main];
 
-        // =========================
-        // STAT PRINCIPALE
-        // =========================
+              const div = document.createElement("div");
+              div.className = "stat main-stat";
+              div.dataset.type = "main";
+              div.dataset.name = group.main;
+              div.dataset.value = value;
 
-        if (Object.prototype.hasOwnProperty.call(player.mainStats, group.main)) {
+              div.innerHTML = `
+                  <span class="stat-name">${group.main}</span>
+                  <span class="stat-value">${value}</span>
+              `;
 
-            const value = player.mainStats[group.main];
+              div.addEventListener("click", () => {
+                  div.classList.toggle("selected");
+                  updateTarget();
+              });
 
-            const div = document.createElement("div");
+              container.appendChild(div);
+          }
 
-            div.className = "stat";
+          // =========================
+          // STATS SECONDAIRES
+          // =========================
+          group.secondary.forEach(statName => {
 
-            div.dataset.type = "main";
-            div.dataset.name = group.main;
-            div.dataset.value = value;
+              if (!Object.prototype.hasOwnProperty.call(player.secondaryStats, statName)) {
+                  return;
+              }
 
-            div.innerHTML = `
-                <span class="stat-name">
-                    ${group.main}
-                </span>
+              const value = player.secondaryStats[statName];
 
-                <span class="stat-value">
-                    ${value}
-                </span>
-            `;
+              const div = document.createElement("div");
+              div.className = "stat secondary-stat";
+              div.dataset.type = "secondary";
+              div.dataset.name = statName;
+              div.dataset.value = value;
 
-            div.addEventListener("click", () => {
+              div.innerHTML = `
+                  <span class="stat-name">${statName}</span>
+                  <span class="stat-value">${value}</span>
+              `;
 
-                div.classList.toggle("selected");
+              div.addEventListener("click", () => {
+                  div.classList.toggle("selected");
+                  updateTarget();
+              });
 
-                updateTarget();
-
-            });
-
-            container.appendChild(div);
-        }
-
-
-        // =========================
-        // STATS SECONDAIRES
-        // =========================
-
-        group.secondary.forEach(statName => {
-
-            if (!Object.prototype.hasOwnProperty.call(player.secondaryStats, statName)) {
-                return;
-            }
-
-            const value = player.secondaryStats[statName];
-
-            const div = document.createElement("div");
-
-            div.className = "stat";
-
-            div.dataset.type = "secondary";
-            div.dataset.name = statName;
-            div.dataset.value = value;
-
-            div.innerHTML = `
-                <span class="stat-name">
-                    ${statName}
-                </span>
-
-                <span class="stat-value">
-                    ${value}
-                </span>
-            `;
-
-            div.addEventListener("click", () => {
-
-                div.classList.toggle("selected");
-
-                updateTarget();
-
-            });
-
-            container.appendChild(div);
-
-        });
-
-    });
-
-}
-  
+              container.appendChild(div);
+          });
+      });
+  }
   
   /* =========================================================
      TALENTS
