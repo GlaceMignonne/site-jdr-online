@@ -3816,34 +3816,67 @@
 
           const newTalents = [];
 
-          document
-              .querySelectorAll(
-                  "[data-talent]"
-              )
-              .forEach(
-                  input => {
-
-                    const value =
-                          input.value.trim();
-
-                      if (value !== "") {
-
-                          /*
-                           * On conserve les talents
-                           * sous forme d'objet JSON.
-                           * Cela évite que Supabase
-                           * transforme les talents en
-                           * simples chaînes de caractères.
-                           */
-
-                          newTalents.push({
-                              name: value
-                          });
-
-                      }
-
-                  }
+          const talentRows =
+              document.querySelectorAll(
+                  "[data-talent-row]"
               );
+
+          talentRows.forEach(
+              row => {
+
+                  const nameInput =
+                      row.querySelector(
+                          '[data-talent-field="name"]'
+                      );
+
+                  const valueInput =
+                      row.querySelector(
+                          '[data-talent-field="value"]'
+                      );
+
+                  const classGrantedInput =
+                      row.querySelector(
+                          '[data-talent-field="classGranted"]'
+                      );
+
+                  if (!nameInput) {
+                      return;
+                  }
+
+                  const name =
+                      nameInput.value.trim();
+
+                  if (name === "") {
+                      return;
+                  }
+
+                  const value =
+                      valueInput
+                          ? Number(
+                              valueInput.value
+                          )
+                          : 0;
+
+                  const classGranted =
+                      classGrantedInput
+                          ? classGrantedInput.checked
+                          : false;
+
+                  newTalents.push({
+
+                      name,
+
+                      value:
+                          Number.isNaN(value)
+                              ? 0
+                              : value,
+
+                      classGranted
+
+                  });
+
+              }
+          );
 
       /*  SAUVEGARDE SUPABASE  */
 
