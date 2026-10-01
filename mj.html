@@ -3582,6 +3582,81 @@
 
   }
 
+  function addTalentToSheet(characterId) {
+
+      const container =
+          document.getElementById(
+              "talents-container"
+          );
+
+      if (!container) {
+          return;
+      }
+
+      const index =
+          container.querySelectorAll(
+              "[data-talent]"
+          ).length;
+
+      const row =
+          document.createElement("div");
+
+      row.className =
+          "talent-row";
+
+      row.dataset.talentRow =
+          index;
+
+      row.innerHTML = `
+
+          <input
+              class="sheet-edit-value"
+              data-talent="${index}"
+              value=""
+              placeholder="Nouveau talent"
+          >
+
+          <button
+              type="button"
+              class="talent-delete-btn"
+              onclick="
+                  this.parentElement.remove()
+              "
+          >
+              🗑
+          </button>
+
+      `;
+
+      container.appendChild(row);
+
+      const input =
+          row.querySelector(
+              "[data-talent]"
+          );
+
+      input.focus();
+
+  }
+
+  function deleteTalentFromSheet(
+      characterId,
+      index
+  ) {
+
+      const row =
+          document.querySelector(
+              `[data-talent-row="${index}"]`
+          );
+
+      if (!row) {
+          return;
+      }
+
+      row.remove();
+
+  }
+    
   /* =========================================================
      SAUVEGARDE FICHE PERSONNAGE
   ========================================================= */
