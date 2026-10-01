@@ -1633,56 +1633,53 @@ async function loadPlayerCharacter() {
     console.log("=== STATS PRINCIPALES ===", mainStats);
     console.log("=== STATS SECONDAIRES ===", secondaryStats);
 
-   /* =====================================================
+  /* =====================================================
      TALENTS
   ===================================================== */
 
-  let talents = {};
+  let talents = [];
 
-  if (
-      Array.isArray(character.talents)
-  ) {
+  if (Array.isArray(character.talents)) {
 
-      character.talents.forEach(
-          talent => {
+      talents = character.talents.map(talent => {
 
-              if (
-                  typeof talent === "string"
-              ) {
+          if (typeof talent === "string") {
 
-                  talents[talent] = 1;
+              return {
+                  name: talent,
+                  value: 0,
+                  classGranted: false
+              };
 
-              } else if (
-                  talent &&
-                  typeof talent === "object"
-              ) {
+          }
 
-                  const name =
+          if (
+              talent &&
+              typeof talent === "object"
+          ) {
+
+              return {
+                  name:
                       talent.name ||
                       talent.label ||
-                      "Talent";
+                      "Talent",
 
-                  const value =
-                      Number(
-                          talent.value
-                      ) || 1;
+                  value:
+                      Number(talent.value) || 0,
 
-                  talents[name] =
-                      value;
-              }
-  
+                  classGranted:
+                      Boolean(
+                          talent.classGranted
+                      )
+              };
+
           }
-      );
 
-  } else if (
-      character.talents &&
-      typeof character.talents === "object"
-  ) {
+          return null;
 
-      talents =
-          character.talents;
+      }).filter(Boolean);
+
   }
-
     /* =====================================================
        INVENTAIRE
     ===================================================== */
