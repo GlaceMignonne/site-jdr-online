@@ -2928,25 +2928,7 @@
                       )
                       .join("");
 
-              const portraitHTML =
-                  character?.portrait_url
-                      ? `
-                          <img
-                              src="${escapeHTML(
-                                  character.portrait_url
-                              )}"
-                              alt="Portrait"
-                          >
-                      `
-                      : "👤";
-
               element.innerHTML = `
-
-                  <div class="player-avatar">
-
-                      ${portraitHTML}
-  
-                  </div>
 
                   <div class="player-info">
 
