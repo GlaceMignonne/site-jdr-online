@@ -3323,21 +3323,55 @@
       const talentsHTML =
           talents
               .map(
-                  (talent, index) => `
+                  (talent, index) => {
 
-                      <div class="stat-row">
+                      /* Les talents sont des objets JSON. On essaie de récupérer leur nom/texte. */
 
-                          <input
-                              class="sheet-edit-value"
-                              data-talent="${index}"
-                              value="${escapeHTML(
-                                  talent
-                              )}"
+                      const talentName =
+                          typeof talent === "object"
+                              ? (
+                                  talent.name ??
+                                  talent.nom ??
+                                  talent.title ??
+                                  talent.talent ??
+                                  talent.description ??
+                                  ""
+                              )
+                              : talent;
+
+                      return `
+
+                          <div
+                              class="talent-row"
+                              data-talent-row="${index}"
                           >
 
-                      </div>
+                              <input
+                                  class="sheet-edit-value"
+                                  data-talent="${index}"
+                                  value="${escapeHTML(
+                                      String(talentName)
+                                  )}"
+                              >
 
-                  `
+                              <button
+                                  type="button"
+                                  class="talent-delete-btn"
+                                  onclick="
+                                      deleteTalentFromSheet(
+                                          '${character.id}',
+                                          ${index}
+                                      )
+                                  "
+                              >
+                                  🗑
+                              </button>
+
+                          </div>
+
+                      `;
+
+                  }
               )
               .join("");
 
@@ -3487,7 +3521,23 @@
                       Talents
                   </h4>
 
-                  ${talentsHTML}
+                  <div id="talents-container">
+
+                      ${talentsHTML}
+
+                  </div>
+
+                  <button
+                      type="button"
+                      class="talent-add-btn"
+                      onclick="
+                          addTalentToSheet(
+                              '${character.id}'
+                          )
+                      "
+                  >
+                      + Ajouter un talent
+                  </button>
 
               </div>
 
