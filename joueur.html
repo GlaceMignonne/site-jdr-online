@@ -2474,21 +2474,29 @@ async function loadPlayerCharacter() {
       talentContainer.innerHTML = "";
   
   
-      Object.entries(player.talents).forEach(
-          ([name, value]) => {
-  
+      player.talents.forEach(
+          talent => {
+
               talentContainer.innerHTML += `
-  
+
                   <div class="sheet-stat">
-                      <span>${name}</span>
-                      <strong>${value}</strong>
+
+                      <span>
+                          ${escapeHtml(
+                              talent.name
+                          )}
+                      </span>
+
+                      <strong>
+                          ${talent.value}
+                      </strong>
+
                   </div>
-  
-              `;
-  
+
+                `;
+
           }
       );
-  
   
       document.getElementById("sheetEquipment")
           .innerText =
