@@ -1633,56 +1633,55 @@ async function loadPlayerCharacter() {
     console.log("=== STATS PRINCIPALES ===", mainStats);
     console.log("=== STATS SECONDAIRES ===", secondaryStats);
 
-    /* =====================================================
-       TALENTS
-    ===================================================== */
+   /* =====================================================
+     TALENTS
+  ===================================================== */
 
-    let talents = {};
+  let talents = {};
 
-    if (
-        Array.isArray(character.talents)
-    ) {
+  if (
+      Array.isArray(character.talents)
+  ) {
 
-        character.talents.forEach(
-            talent => {
+      character.talents.forEach(
+          talent => {
 
-                if (
-                    typeof talent === "string"
-                ) {
+              if (
+                  typeof talent === "string"
+              ) {
 
-                    talents[talent] = 1;
+                  talents[talent] = 1;
 
-                } else if (
-                    talent &&
-                    typeof talent === "object"
-                ) {
+              } else if (
+                  talent &&
+                  typeof talent === "object"
+              ) {
 
-                    const name =
-                        talent.name ||
-                        talent.label ||
-                        "Talent";
+                  const name =
+                      talent.name ||
+                      talent.label ||
+                      "Talent";
 
-                    const value =
-                        Number(
-                            talent.value
-                        ) || 1;
+                  const value =
+                      Number(
+                          talent.value
+                      ) || 1;
 
-                    talents[name] =
-                        value;
-                }
+                  talents[name] =
+                      value;
+              }
+  
+          }
+      );
 
-            }
-        );
+  } else if (
+      character.talents &&
+      typeof character.talents === "object"
+  ) {
 
-    } else if (
-        character.talents &&
-        typeof character.talents === "object"
-    ) {
-
-        talents =
-            character.talents;
-    }
-
+      talents =
+          character.talents;
+  }
 
     /* =====================================================
        INVENTAIRE
