@@ -2361,161 +2361,268 @@
   <script src="supabase.js"></script>
   
   <script>
-  
+
   /* =========================================================
-     DONNÉES 
+     DONNÉES DE LA PARTIE
   ========================================================= */
-  
-  const partyCode = localStorage.getItem("jdr_party_code");
-  const role = localStorage.getItem("jdr_role");
-  const playerId = localStorage.getItem("jdr_player_id");
+
+  const partyCode =
+      localStorage.getItem("jdr_party_code");
+
+  const role =
+      localStorage.getItem("jdr_role");
+
+  const playerId =
+      localStorage.getItem("jdr_player_id");
 
   let players = [];
 
+
+  /* =========================================================
+     CHARGEMENT DES JOUEURS + PERSONNAGES
+  ========================================================= */
+
   async function loadPlayers() {
+
       console.log("TEST : loadPlayers() est appelée");
 
       if (!partyCode) {
-          console.error("Aucun code de partie trouvé.");
+
+          console.error(
+              "Aucun code de partie trouvé."
+          );  
+
           return;
       }
 
-      console.log("Code de partie :", partyCode);
+      console.log(
+          "Code de partie :",
+          partyCode
+      );
 
-      // 1. Récupérer les joueurs de la partie
-      const { data, error } = await supabaseClient
-          .from("characters")
+
+      /*  1. On récupère les joueurs connectés */
+
+      const {
+          data: playerData,
+          error: playerError
+      } = await supabaseClient
+          .from("players")
           .select(`
               id,
               name,
-              age,
-              class,
-              stats,
-              talents,
-              hearts,
-              portrait_url,
-              inventory
+              character_name,
+              connected,
+              ready,
+              user_id,
+              character_id
           `)
-        
-          .in("id", characterIds);
-          .eq("party_code", partyCode)
-          .eq("connected", true)
-          .order("name");
+          .eq(
+              "party_code",
+              partyCode
+          )
+          .eq(
+              "connected",
+              true
+          )
+          .order(
+              "name"
+          );
 
-      console.log("Résultat Supabase joueurs :", playerData);
-      console.log("Erreur Supabase joueurs :", playerError);
+      console.log(
+          "Résultat Supabase joueurs :",
+          playerData
+      );
+
+      console.log(
+          "Erreur Supabase joueurs :",
+          playerError
+      );
 
       if (playerError) {
-          console.error("Erreur lors du chargement des joueurs :", playerError);
+
+          console.error(
+              "Erreur lors du chargement des joueurs :",
+              playerError
+          );
+
           return;
       }
 
-      const playerRows = playerData || [];
+      const playerRows =
+          playerData || [];
 
-      // 2. Récupérer les personnages sélectionnés
-      const characterIds = playerRows
-          .map(player => player.character_id)
-          .filter(Boolean);
+
+      /*  2. On récupère les personnages */
+
+        const characterIds =
+          playerRows
+              .map(
+                  player =>
+                      player.character_id
+              )
+              .filter(Boolean);
 
       let characterRows = [];
 
+
       if (characterIds.length > 0) {
-          const { data, error } = await supabaseClient
+
+          const {
+              data: characterData,
+              error: characterError
+          } = await supabaseClient
               .from("characters")
               .select(`
                   id,
-                 name,
-                 class,
-                 portrait_url,
-                 hearts
-             `)
-             .in("id", characterIds);
+                  name,
+                  age,
+                  class,
+                  luck,
+                  stats,
+                  talents,
+                  hearts,
+                  portrait_url,
+                  inventory
+              `)
+              .in(
+                  "id",
+                  characterIds
+              );
 
-         if (error) {
-             console.error("Erreur lors du chargement des personnages :", error);
-         } else {
-             characterRows = data || [];
-         }
-     }
+          console.log(
+              "Personnages récupérés :",
+              characterData
+          );
 
-     // 3. Associer chaque personnage à son joueur
-     players = playerRows.map(player => {
+          if (characterError) {
 
-         const character = characterRows.find(
-             character => character.id === player.character_id
-         );
+              console.error(
+                  "Erreur lors du chargement des personnages :",
+                  characterError
+              );
 
-         return {
-             ...player,
-             character: character || null
-         };
-     });
+          } else {
 
-     console.log("Joueurs avec leurs personnages :", players);
+              characterRows =
+                  characterData || [];
 
-     renderPlayers();
- }
+          }
+
+      }
+
+      /* 3. On associe chaque personnage à son joueur */
+
+      players =
+          playerRows.map(
+              player => {
+
+                  const character =
+                      characterRows.find(
+                          character =>
+                              character.id ===
+                              player.character_id
+                      );
+
+                  return {
   
+                      ...player,
+
+                      character:
+                          character || null
+
+                  };
+
+              }
+          );
+
+      console.log(
+          "Joueurs avec leurs personnages :",
+          players
+      );
+
+
+      renderPlayers();
+
+  }
+
   /* =========================================================
      VARIABLES CARTE
   ========================================================= */
-  
+
   let mapScale = 1;
-  
+
   let mapX = 0;
-  
+
   let mapY = 0;
-  
+
   let draggingMap = false;
-  
+
   let dragStartX = 0;
-  
+
   let dragStartY = 0;
-  
+
   let startMapX = 0;
-  
+
   let startMapY = 0;
-  
+
   let currentMap = null;
-  
+
   let maps = [];
-  
+
   let fogEnabled = false;
-  
+
   let fogEditing = false;
-  
+
   let fogDrawing = false;
-  
-  
+
   /* =========================================================
      INITIALISATION
   ========================================================= */
-  
+
   document.addEventListener(
       "DOMContentLoaded",
       async () => {
 
           setupMapControls();
+
           setupFogCanvas();
+
           setupChat();
+
           setupDice();
+
           setupMapUpload();
 
           await loadPlayers();
 
       }
   );
-  
+
   /* =========================================================
      JOUEURS
   ========================================================= */
-  
-  function renderPlayers() {
-      console.log("TEST : renderPlayers()", players);
-      
-    const container = document.getElementById("playersList");
 
-    console.log("TEST : playersList =", container);
+  function renderPlayers() {
+
+      console.log(
+          "TEST : renderPlayers()",
+          players
+      );
+
+      const container =
+          document.getElementById(
+              "playersList"
+          );
+
+      if (!container) {
+
+          console.error(
+              "playersList introuvable."
+          );
+
+          return;
+      }
 
       container.innerHTML = "";
 
@@ -2527,119 +2634,248 @@
               </div>
           `;
 
-          document.getElementById("playerCount")
+          document
+              .getElementById(
+                  "playerCount"
+              )
               .textContent = "0";
 
           return;
       }
 
-      players.forEach(player => {
 
-          const element =
-              document.createElement("div");
+      players.forEach(
+          player => {
 
-          element.className = "player";
+              const element =
+                  document.createElement(
+                      "div"
+                  );
 
-          element.dataset.id = player.id;
+              element.className =
+                  "player";
 
-          element.onclick = () => {
+              element.dataset.id =
+                  player.id;
 
-              console.log(
-                  "Joueur sélectionné :",
-                  player
+              /*   Cliquer sur le joueur ouvre sa fiche.  */
+
+              element.onclick =
+                  () => {
+
+                      console.log(
+                          "CLIC PERSONNAGE :",
+                          player
+                      );
+
+                      openCharacterSheet(
+                          player
+                      );
+
+                  };
+
+              const character =
+                  player.character;
+
+
+              const characterName =
+                  character?.name ||
+                  player.character_name ||
+                  "Personnage non sélectionné";
+
+
+              const hearts =
+                  character?.hearts || [];
+
+              const heartsHTML =
+                  hearts
+                      .map(
+                          (state, index) => `
+  
+                              <span
+                                  class="
+                                      heart
+                                      ${state}
+                                  "
+                                  onclick="
+                                      changeHeart(
+                                          event,
+                                          '${player.id}',
+                                          ${index}
+                                      )
+                                  "
+                              >
+                                  ${getHeartIcon(state)}
+                              </span>
+
+                          `
+                      )
+                      .join("");
+
+              const portraitHTML =
+                  character?.portrait_url
+                      ? `
+                          <img
+                              src="${escapeHTML(
+                                  character.portrait_url
+                              )}"
+                              alt="Portrait"
+                          >
+                      `
+                      : "👤";
+
+              element.innerHTML = `
+
+                  <div class="player-avatar">
+
+                      ${portraitHTML}
+  
+                  </div>
+
+                  <div class="player-info">
+
+                      <div class="player-name">
+
+                          ${escapeHTML(
+                              characterName
+                          )}
+
+                      </div>
+
+                      <div class="player-character">
+
+                          ${escapeHTML(
+                              player.name ||
+                              "Joueur"
+                          )}
+
+                      </div>
+
+                      <div class="player-hearts">
+
+                          ${heartsHTML}
+
+                      </div>
+
+                  </div>
+
+              `;
+
+              container.appendChild(
+                  element
               );
 
-              // La fiche personnage viendra à l'étape suivante.
-          };
+          }
+      );
 
+      document
+          .getElementById(
+              "playerCount"
+          )
+          .textContent =
+              players.length;
 
-          element.innerHTML = `
-
-              <div class="player-avatar">
-                  👤
-              </div>
-
-              <div class="player-info">
-
-                <div class="player-name">
-                    ${escapeHTML(
-                        player.character?.name ||
-                        "Personnage non sélectionné"
-                    )}
-                </div>
-
-                <div class="player-character">
-                    ${escapeHTML(player.name || "Joueur")}
-                </div>
-
-              </div>
-
-        `  ;
-
-          container.appendChild(element);
-
-      });
-
-      document.getElementById("playerCount")
-          .textContent = players.length;
   }
-  
+
   /* =========================================================
      COEURS
   ========================================================= */
-  
+
   function getHeartIcon(state) {
-  
+
       if (state === "healthy") {
-  
+
           return "♥";
-  
+
       }
-  
+
       if (state === "poisoned") {
-  
+
           return "♥";
-  
+
       }
-  
+
       return "♥";
-  
+
   }
-  
-  
-  async function changeHeart(event, playerId, heartIndex) {
+
+  /* =========================================================
+     MODIFICATION DES COEURS
+  ========================================================= */
+
+  async function changeHeart(
+      event,
+      playerId,
+      heartIndex
+  ) {
 
       event.stopPropagation();
 
-      const player = players.find(
-          p => p.id === playerId
-      );
+      const player =
+          players.find(
+              p =>
+                  p.id === playerId
+          );
 
-      if (!player || !player.character) return;
+      if (
+          !player ||
+          !player.character
+      ) {
 
-      const current = player.character.hearts?.[heartIndex];
+          return;
+
+      }
+
+      const hearts =
+          Array.isArray(
+              player.character.hearts
+          )
+              ? [
+                  ...player.character.hearts
+              ]
+              : [];
+
+      const current =
+          hearts[heartIndex];
 
       const states = [
+
           "healthy",
+
           "poisoned",
+
           "injured"
+
       ];
 
-      const index = states.indexOf(current);
+      const index =
+          states.indexOf(
+              current
+          );
 
       const newState =
-          states[(index + 1) % states.length];
+          states[
+              (index + 1) %
+              states.length
+          ];
 
-      // Modifier localement
-      player.character.hearts[heartIndex] = newState;
+      hearts[heartIndex] =
+          newState;
 
-      // Enregistrer immédiatement dans Supabase
-      const { error } = await supabaseClient
-          .from("characters")
-          .update({
-              hearts: player.character.hearts
-          })
-          .eq("id", player.character.id);
+      /*  Sauvegarde immédiate dans Supabase.  */
+
+      const {
+          error
+      } =
+          await supabaseClient
+              .from("characters")
+              .update({
+                  hearts: hearts
+              })
+              .eq(
+                  "id",
+                  player.character.id
+              );
 
       if (error) {
 
@@ -2651,14 +2887,42 @@
           return;
       }
 
+      /*   Mise à jour locale.  */
+
+      player.character.hearts =
+          hearts;
+
       console.log(
-          "Cœur modifié et sauvegardé :",
+          "Cœur sauvegardé :",
           player.character.name,
-          player.character.hearts
+          hearts
       );
 
       renderPlayers();
+
+      /*  Si la fiche de ce personnage est actuellement ouverte, on la rafraîchit également.  */
+
+      if (
+          document
+              .getElementById(
+                  "characterModal"
+              )
+              .classList.contains(
+                  "active"
+              )
+      ) {
+
+          openCharacterSheet(
+              player
+          );
+
+      }
+
   }
+
+  /* =========================================================
+     COEURS DEPUIS LA FICHE
+  ========================================================= */
 
   async function changeHeartFromSheet(
       event,
@@ -2670,40 +2934,66 @@
 
       const player =
           players.find(
-              p => p.character?.id === characterId
+              p =>
+                  p.character?.id ===
+                  characterId
           );
 
-      if (!player || !player.character) {
+
+      if (
+          !player ||
+          !player.character
+      ) {
+
           return;
+
       }
 
       const hearts =
-          player.character.hearts || [];
+          Array.isArray(
+              player.character.hearts
+          )
+              ? [
+                  ...player.character.hearts
+              ]
+              : [];
 
       const states = [
+
           "healthy",
+  
           "poisoned",
+
           "injured"
+
       ];
 
       const current =
           hearts[heartIndex];
 
       const index =
-          states.indexOf(current);
+          states.indexOf(
+              current
+          );
 
       hearts[heartIndex] =
           states[
-              (index + 1) % states.length
+              (index + 1) %
+              states.length
           ];
 
-      const { error } =
+      const {
+          error
+      } =
           await supabaseClient
               .from("characters")
               .update({
-                  hearts
+                  hearts: hearts
               })
-              .eq("id", characterId);
+              .eq(
+                  "id",
+                  characterId
+              );
 
       if (error) {
 
@@ -2713,6 +3003,7 @@
           );
 
           return;
+
       }
 
       player.character.hearts =
@@ -2723,108 +3014,165 @@
           hearts
       );
 
+      /*  Rafraîchir la fiche.   */
 
-      // Rafraîchir la fiche actuellement ouverte
-      openCharacterSheet(player);
+      openCharacterSheet(
+          player
+      );
 
-      // Rafraîchir la liste
+      /*   Rafraîchir la liste.  */
+
       renderPlayers();
+
   }
-    
+
   /* =========================================================
      FICHE PERSONNAGE
   ========================================================= */
-  
- function openCharacterSheet(player) {
-   
-      console.log("CLIC PERSONNAGE :", player);
-   
-      const modal =
-          document.getElementById("characterModal");
 
-      const character = player.character;
+  function openCharacterSheet(
+      player
+  ) {
+
+      console.log(
+          "CLIC PERSONNAGE :",
+          player
+      );
+
+      const modal =
+          document.getElementById(
+              "characterModal"
+          );
+
+      const character =
+          player.character;
 
       if (!character) {
+
           console.error(
               "Aucun personnage associé à ce joueur."
           );
+
           return;
+
       }
 
       document.getElementById(
           "modalCharacterName"
-      ).textContent = character.name;
+      ).textContent =
+          character.name ||
+          "Personnage";
 
       const stats =
           character.stats || {};
 
       const talents =
-          Array.isArray(character.talents)
+          Array.isArray(
+              character.talents
+          )
               ? character.talents
               : [];
 
       const hearts =
-          Array.isArray(character.hearts)
+          Array.isArray(
+              character.hearts
+          )
               ? character.hearts
               : [];
 
       const inventory =
-          character.inventory || "";
+          character.inventory ||
+          "";
+
+      /*  CARACTÉRISTIQUES  */
 
       const statsHTML =
-          Object.entries(stats)
-              .map(([name, value]) => `
-                  <div class="stat-row">
+          Object.entries(
+              stats
+          )
+          .map(
+              ([name, value]) => `
 
+                  <div class="stat-row">
+  
                       <input
                           class="sheet-edit-name"
-                          value="${escapeHTML(name)}"
+                          value="${escapeHTML(
+                              name
+                          )}"
                           readonly
                       >
 
+
                       <input
                           class="sheet-edit-value"
-                          data-stat="${escapeHTML(name)}"
-                          value="${escapeHTML(String(value))}"
+                          data-stat="${escapeHTML(
+                              name
+                          )}"
+                          value="${escapeHTML(
+                              String(value)
+                          )}"
                       >
 
                   </div>
-              `)
-              .join("");
+
+              `
+          )
+          .join("");
+
+      /*  TALENTS  */
 
       const talentsHTML =
           talents
-              .map((talent, index) => `
-                  <div class="stat-row">
+              .map(
+                  (talent, index) => `
 
-                      <input
-                          class="sheet-edit-value"
-                          data-talent="${index}"
-                          value="${escapeHTML(talent)}"
-                      >
+                      <div class="stat-row">
 
-                  </div>
-              `)
+                          <input
+                              class="sheet-edit-value"
+                              data-talent="${index}"
+                              value="${escapeHTML(
+                                  talent
+                              )}"
+                          >
+
+                      </div>
+
+                  `
+              )
               .join("");
+
+      /*  COEURS  */
 
       const heartsHTML =
           hearts
-              .map((state, index) => `
-                  <button
-                      class="sheet-heart"
-                      type="button"
-                      onclick="
-                          changeHeartFromSheet(
-                              event,
-                              '${character.id}',
-                              ${index}
-                          )
-                      "
-                  >
-                      ${getHeartIcon(state)}
-                  </button>
-              `)
+              .map(
+                  (state, index) => `
+
+                      <button
+                          class="
+                              sheet-heart
+                              ${state}
+                          "
+                          type="button"
+                          onclick="
+                              changeHeartFromSheet(
+                                  event,
+                                  '${character.id}',
+                                  ${index}
+                              )
+                          "
+                      >
+                          ${getHeartIcon(state)}
+                      </button>
+
+                  `
+              )
               .join("");
+
+
+      /*  HTML DE LA FICHE  */
 
       document.getElementById(
           "characterSheet"
@@ -2832,15 +3180,28 @@
 
           <div class="character-header">
 
+
               <div class="character-portrait">
 
                   ${
                       character.portrait_url
-                      ? `<img
-                          src="${escapeHTML(character.portrait_url)}"
-                          alt="Portrait"
-                      >`
-                      : "👤"
+  
+                      ?
+
+                      `
+                          <img
+                              src="${escapeHTML(
+                                  character.portrait_url
+                              )}"
+                              alt="Portrait de ${escapeHTML(
+                                  character.name || ""
+                              )}"
+                          >
+                      `
+
+                      :
+
+                      "👤"
                   }
 
               </div>
@@ -2850,194 +3211,302 @@
                   <input
                       class="sheet-title-input"
                       id="sheet-name"
-                      value="${escapeHTML(character.name || "")}"
+                      value="${escapeHTML(
+                          character.name || ""
+                      )}"
                   >
 
                   <p>
+
                       Joueur :
+
                       <strong>
-                          ${escapeHTML(player.name || "")}
+                          ${escapeHTML(
+                              player.name || ""
+                          )}
                       </strong>
+
                   </p>
 
                   <label>
+
                       Âge
+
                       <input
                           id="sheet-age"
                           type="number"
                           value="${character.age ?? ""}"
                       >
+
                   </label>
-  
+
                   <label>
+
                       Classe
+
                       <input
                           id="sheet-class"
-                          value="${escapeHTML(character.class || "")}"
+                          value="${escapeHTML(
+                              character.class || ""
+                          )}"
                       >
+
                   </label>
 
                   <div class="sheet-hearts">
 
-                      <strong>État :</strong>
+                      <strong>
+                          État :
+                      </strong>
 
                       <div>
-                          ${heartsHTML}
-                      </div>
 
+                          ${heartsHTML}
+
+                      </div>
+  
                   </div>
 
               </div>
 
           </div>
 
-
           <div class="sheet-grid">
-
 
               <div class="sheet-box">
 
-                  <h4> Caractéristiques </h4>
+                  <h4>
+                      Caractéristiques
+                  </h4>
 
                   ${statsHTML}
 
               </div>
 
-
               <div class="sheet-box">
 
-                  <h4> Talents </h4>
+                  <h4>
+                      Talents
+                  </h4>
 
                   ${talentsHTML}
 
               </div>
 
-
               <div class="sheet-box">
 
-                  <h4> Équipement  </h4>
+                  <h4>
+                      Équipement
+                  </h4>
+
 
                   <textarea
                       id="sheet-inventory"
                       class="sheet-textarea"
-                  >${escapeHTML(inventory)}</textarea>
+                  >${escapeHTML(
+                      inventory
+                  )}</textarea>
 
               </div>
 
           </div>
 
-            <div class="sheet-actions">
+          <div class="sheet-actions">
 
               <button
                   class="save-character-btn"
-                  onclick="saveCharacterFromSheet('${character.id}')"
+                  onclick="
+                      saveCharacterFromSheet(
+                          '${character.id}'
+                      )
+                  "
               >
                   Enregistrer les modifications
               </button>
 
           </div>
+
       `;
 
-      modal.classList.add("active");
+      modal.classList.add(
+          "active"
+      );
+
   }
 
-  async function saveCharacterFromSheet(characterId) {
+  /* =========================================================
+     SAUVEGARDE FICHE PERSONNAGE
+  ========================================================= */
+
+  async function saveCharacterFromSheet(
+      characterId
+  ) {
+
+      const player =
+          players.find(
+              p =>
+                  p.character?.id ===
+                  characterId
+          );
 
       const character =
-          players.find(
-              p => p.character?.id === characterId
-          )?.character;
+          player?.character;
 
-      if (!character) return;
+      if (!character) {
 
+          console.error(
+              "Personnage introuvable :",
+              characterId
+          );
 
-      // Nom
+          return;
+
+      }
+
+      /*  NOM  */
+
       const name =
-          document.getElementById(
-              "sheet-name"
-          ).value.trim();
+          document
+              .getElementById(
+                  "sheet-name"
+              )
+              .value
+              .trim();
 
-      // Âge
+      /* ÂGE */
+
       const ageValue =
-          document.getElementById(
-              "sheet-age"
-          ).value;
+          document
+              .getElementById(
+                  "sheet-age"
+              )
+              .value;
 
       const age =
           ageValue === ""
               ? null
-              : Number(ageValue);
+              : Number(
+                  ageValue
+              );
 
-      // Classe
+      /*  CLASSE  */
+
       const className =
-          document.getElementById(
-              "sheet-class"
-          ).value.trim();
+          document
+              .getElementById(
+                  "sheet-class"
+              )
+              .value
+              .trim();
 
-      // Inventaire
+      /*  INVENTAIRE  */
+
       const inventory =
-          document.getElementById(
-              "sheet-inventory"
-          ).value;
+          document
+              .getElementById(
+                  "sheet-inventory"
+              )
+              .value;
 
-      // Statistiques
+      /*  STATISTIQUES  */
+
       const newStats = {};
 
       document
-          .querySelectorAll("[data-stat]")
-          .forEach(input => {
+          .querySelectorAll(
+              "[data-stat]"
+          )
+          .forEach(
+              input => {
 
-              const statName =
-                  input.dataset.stat;
+                  const statName =
+                      input.dataset.stat;
 
-              const value =
-                  input.value;
+                  const value =
+                      input.value;
 
-              const numberValue =
-                  Number(value);
+                  const numberValue =
+                      Number(
+                          value
+                      );
 
-              newStats[statName] =
-                  value !== "" &&
-                  !Number.isNaN(numberValue)
-                      ? numberValue
-                      : value;
-          });
+                  newStats[
+                      statName
+                  ] =
+                      value !== "" &&
+                      !Number.isNaN(
+                          numberValue
+                      )
 
-      // Talents
+                          ? numberValue
+
+                          : value;
+
+              }
+          );
+
+      /*  TALENTS  */
+
       const newTalents = [];
 
       document
-          .querySelectorAll("[data-talent]")
-          .forEach(input => {
+          .querySelectorAll(
+              "[data-talent]"
+          )
+          .forEach(
+              input => {
 
-              const value =
-                  input.value.trim();
+                  const value =
+                      input.value.trim();
 
-              if (value !== "") {
-                  newTalents.push(value);
+                  if (
+                      value !== ""
+                  ) {
+
+                      newTalents.push(
+                          value
+                      );
+  
+                  }
+
               }
-          });
+          );
 
-      const { data, error } =
+      /*  SAUVEGARDE SUPABASE  */
+
+      const {
+          data,
+          error
+      } =
           await supabaseClient
               .from("characters")
               .update({
 
                   name,
+
                   age,
-                  class: className,
-                  stats: newStats,
-                  talents: newTalents,
+
+                  class:
+                      className,
+
+                  stats:
+                      newStats,
+  
+                  talents:
+                      newTalents,
+
                   inventory
 
               })
-              .eq("id", characterId)
+              .eq(
+                  "id",
+                  characterId
+              )
               .select()
               .single();
 
-
       if (error) {
-  
+
           console.error(
               "Erreur lors de la sauvegarde du personnage :",
               error
@@ -3048,233 +3517,254 @@
           );
 
           return;
+
       }
 
-      // Mettre à jour notre copie locale
-      const player =
-          players.find(
-              p => p.character?.id === characterId
-          );
+      /*  Mise à jour locale.  */
 
-      if (player) {
-          player.character = data;
-      }
-
+      player.character =
+          data;
 
       console.log(
           "Personnage sauvegardé :",
           data
       );
 
-      // Actualiser la liste des joueurs
+      /*  Mise à jour de la liste.  */
+
       renderPlayers();
+
+      /*  Mettre à jour le titre de la fiche.  */
+
+      document.getElementById(
+          "modalCharacterName"
+      ).textContent =
+          data.name;
 
       alert(
           "Personnage enregistré."
       );
+
   }
-  
+
+  /* =========================================================
+     FERMETURE FICHE
+  ========================================================= */
+
   function closeCharacterModal() {
-  
+
       document
-          .getElementById("characterModal")
-          .classList.remove("active");
-  
+          .getElementById(
+              "characterModal"
+          )
+          .classList.remove(
+              "active"
+          );
+
   }
-  
-  
+
   document
-      .getElementById("characterModal")
+      .getElementById(
+          "characterModal"
+      )
       .addEventListener(
           "click",
           function(event) {
-  
+
               if (
-                  event.target === this
+                  event.target ===
+                  this
               ) {
-  
+
                   closeCharacterModal();
-  
+
               }
-  
+
           }
       );
-  
-  
+
   /* =========================================================
      DES
   ========================================================= */
-  
-  function randomDice(sides) {
-  
+
+  function randomDice(
+      sides
+  ) {
+
       return Math.floor(
           Math.random() * sides
       ) + 1;
-  
+
   }
-  
-  
-  function quickRoll(sides) {
-  
-      executeRoll(sides);
-  
+
+  function quickRoll(
+      sides
+  ) {
+
+      executeRoll(
+          sides
+      );
+
   }
-  
-  
-  function executeRoll(sides) {
-  
+
+  function executeRoll(
+      sides
+  ) {
+
       const result =
-          randomDice(sides);
-  
-  
+          randomDice(
+              sides
+          );
+
       addConsoleLine(
           `> rolld${sides}`,
           "command"
       );
-  
-  
+
       addConsoleLine(
           `Résultat : ${result}`,
           "result"
       );
-  
+
   }
-  
-  
+
   function executeDiceCommand() {
-  
+
       const input =
           document
-              .getElementById("diceInput")
+              .getElementById(
+                  "diceInput"
+              )
               .value
               .trim()
               .toLowerCase();
-  
-  
-      if (!input) return;
-  
-  
+
+      if (!input)
+          return;
+
       const commands = {
-  
+
           "rolld6": 6,
-  
+
           "rolld20": 20,
-  
+
           "rolld100": 100
-  
+
       };
-  
-  
+
+
       if (
           !commands[input]
       ) {
-  
+
           addConsoleLine(
               `> ${input}`,
               "command"
           );
-  
+
           addConsoleLine(
               "Commande inconnue.",
               "result"
           );
-  
+
+
           return;
   
       }
-  
-  
+
       executeRoll(
           commands[input]
       );
-  
-  
+
       document
-          .getElementById("diceInput")
+          .getElementById(
+              "diceInput"
+          )
           .value = "";
-  
+
   }
-  
-  
+
   function addConsoleLine(
       text,
       type = ""
   ) {
-  
+
       const consoleElement =
           document.getElementById(
               "diceConsole"
           );
-  
-  
+
       const line =
-          document.createElement("div");
-  
-  
+          document.createElement(
+              "div"
+          );
+
       line.className =
           `console-line ${type}`;
-  
-  
+
       line.textContent =
           text;
-  
-  
-      consoleElement.appendChild(line);
-  
-  
+
+      consoleElement.appendChild(
+          line
+      );
+
       consoleElement.scrollTop =
           consoleElement.scrollHeight;
-  
+
   }
-  
-  
+
   function setupDice() {
-  
+
       document
-          .getElementById("diceInput")
+          .getElementById(
+              "diceInput"
+          )
           .addEventListener(
               "keydown",
               event => {
-  
+
                   if (
-                      event.key === "Enter"
+                      event.key ===
+                      "Enter"
                   ) {
-  
+
                       executeDiceCommand();
-  
+
                   }
-  
+
               }
           );
-  
+
   }
-  
-  
+
   /* =========================================================
      CARTES
   ========================================================= */
-  
+
   function setupMapUpload() {
-  
+
       document
-          .getElementById("mapUpload")
+          .getElementById(
+              "mapUpload"
+          )
           .addEventListener(
               "change",
               event => {
-  
+
                   const file =
-                      event.target.files[0];
-  
-                  if (!file) return;
-  
-  
+                      event.target
+                          .files[0];
+
+                  if (!file)
+                      return;
+
                   const reader =
                       new FileReader();
-  
-  
+
                   reader.onload =
                       function(e) {
-  
+
                           const map = {
   
                               id:
@@ -3282,237 +3772,255 @@
   
                               name:
                                   file.name,
-  
+
                               image:
-                                  e.target.result
-  
+                                  e.target
+                                      .result
+
                           };
-  
-  
-                          maps.push(map);
-  
+
+
+                          maps.push(
+                              map
+                          );
+
+
                           renderMaps();
-  
-                          selectMap(map.id);
-  
+
+
+                          selectMap(
+                              map.id
+                          );
+
                       };
-  
-  
-                  reader.readAsDataURL(file);
-  
+
+
+                  reader.readAsDataURL(
+                      file
+                  );
+
               }
           );
-  
+
   }
-  
-  
+
   function renderMaps() {
-  
+
       const container =
           document.getElementById(
               "mapsList"
           );
-  
-  
-      if (maps.length === 0) {
-  
+
+      if (
+          maps.length === 0
+      ) {
+
           container.innerHTML = `
-  
+
               <div class="empty">
+
                   Aucune carte chargée.
+
               </div>
-  
+
           `;
-  
+
           return;
-  
+
       }
+
+      container.innerHTML =
+          "";
+
+      maps.forEach(
+          map => {
+
+              const item =
+                  document.createElement(
+                      "div"
+                  );
+
+              item.className =
+                  "map-item";
+
+              if (
+                  currentMap &&
+                  currentMap.id ===
+                  map.id
+              ) {
+
+                  item.classList.add(
+                      "active"
+                  );
+
+              }
+
+              item.innerHTML = `
+
+                  <span
+                      class="map-item-name"
+                  >
+                      ${escapeHTML(
+                          map.name
+                      )}
+                  </span>
+
+                  <span
+                      class="map-item-delete"
+                      title="Supprimer"
+                  >
+                      ×
+                  </span>
+
+              `;
+
+              item
+                  .querySelector(
+                      ".map-item-name"
+                  )
+                  .onclick =
+                      () => {
+
+                          selectMap(
+                              map.id
+                          );
+
+                      };
+
+              item
+                  .querySelector(
+                      ".map-item-delete"
+                  )
+                  .onclick =
+                      event => {
+
+                          event.stopPropagation();
+
+                          deleteMap(
+                              map.id
+                          );
   
+                      };
   
-      container.innerHTML = "";
-  
-  
-      maps.forEach(map => {
-  
-          const item =
-              document.createElement("div");
-  
-  
-          item.className =
-              "map-item";
-  
-  
-          if (
-              currentMap &&
-              currentMap.id === map.id
-          ) {
-  
-              item.classList.add("active");
-  
+              container.appendChild(
+                  item
+              );
+
           }
-  
-  
-          item.innerHTML = `
-  
-              <span class="map-item-name">
-                  ${map.name}
-              </span>
-  
-              <span
-                  class="map-item-delete"
-                  title="Supprimer"
-              >
-                  ×
-              </span>
-  
-          `;
-  
-  
-          item
-              .querySelector(
-                  ".map-item-name"
-              )
-              .onclick = () => {
-  
-                  selectMap(map.id);
-  
-              };
-  
-  
-          item
-              .querySelector(
-                  ".map-item-delete"
-              )
-              .onclick = event => {
-  
-                  event.stopPropagation();
-  
-                  deleteMap(map.id);
-  
-              };
-  
-  
-          container.appendChild(item);
-  
-      });
-  
+      );
+
   }
-  
-  
-  function selectMap(id) {
-  
+
+  function selectMap(
+      id
+  ) {
+
       const map =
           maps.find(
-              m => m.id === id
+              m =>
+                  m.id === id
           );
-  
-  
-      if (!map) return;
-  
-  
-      currentMap = map;
-  
-  
+
+      if (!map)
+          return;
+
+      currentMap =
+          map;
+
       const world =
           document.getElementById(
               "mapWorld"
           );
-  
-  
+
       world.classList.add(
           "has-image"
       );
-  
-  
+
       world.style.backgroundImage =
           `url("${map.image}")`;
-  
-  
+
       document.getElementById(
           "currentMapName"
       ).textContent =
           map.name;
-  
-  
+
       renderMaps();
-  
+
   }
-  
-  
-  function deleteMap(id) {
-  
+
+  function deleteMap(
+      id
+  ) {
+
       maps =
           maps.filter(
-              map => map.id !== id
+              map =>
+                  map.id !== id
           );
-  
-  
+
       if (
           currentMap &&
           currentMap.id === id
       ) {
-  
-          currentMap = null;
-  
-  
+
+          currentMap =
+              null;
+
           const world =
               document.getElementById(
                   "mapWorld"
               );
-  
-  
+
           world.classList.remove(
               "has-image"
           );
-  
-  
+
           world.style.backgroundImage =
               "";
-  
-  
+
           document.getElementById(
               "currentMapName"
           ).textContent =
               "Aucune carte";
-  
+
       }
-  
-  
+
       renderMaps();
-  
-  }
-  
-  
+
+  }  
+
   /* =========================================================
      ZOOM + DÉPLACEMENT CARTE
   ========================================================= */
-  
+
   function updateMapTransform() {
-  
+
       const world =
           document.getElementById(
               "mapWorld"
           );
-  
-  
+
       world.style.transform =
-  
+
           `translate(calc(-50% + ${mapX}px), calc(-50% + ${mapY}px)) scale(${mapScale})`;
-  
-  
+
+
       document.getElementById(
           "zoomIndicator"
       ).textContent =
-          Math.round(mapScale * 100) + "%";
-  
+          Math.round(
+              mapScale * 100
+          ) + "%";
+
   }
-  
-  
-  function zoomMap(amount) {
-  
-      mapScale += amount;
-  
-  
+
+  function zoomMap(
+      amount
+  ) {
+
+      mapScale +=
+          amount;
+
       mapScale =
           Math.max(
               0.4,
@@ -3521,266 +4029,255 @@
                   mapScale
               )
           );
-  
-  
+
       updateMapTransform();
-  
+
   }
-  
-  
+
   function resetMapView() {
-  
+
       mapScale = 1;
-  
+
       mapX = 0;
-  
+
       mapY = 0;
-  
+
       updateMapTransform();
-  
+
   }
-  
-  
+
   function setupMapControls() {
-  
+
       const viewport =
           document.getElementById(
               "mapViewport"
           );
-  
-  
+
       viewport.addEventListener(
           "mousedown",
           event => {
   
               if (
                   fogEditing
-              ) return;
+              )
+                  return;
   
-  
-              draggingMap = true;
-  
-  
+              draggingMap =
+                  true;
+
               viewport.classList.add(
                   "dragging"
               );
-  
-  
+
               dragStartX =
                   event.clientX;
-  
+
               dragStartY =
                   event.clientY;
-  
-  
+
               startMapX =
                   mapX;
-  
+
               startMapY =
                   mapY;
-  
+
           }
       );
-  
-  
+
       window.addEventListener(
           "mousemove",
           event => {
-  
-              if (!draggingMap)
+
+              if (
+                  !draggingMap
+              )
                   return;
-  
-  
+
               mapX =
                   startMapX +
-                  (event.clientX -
-                  dragStartX);
-  
-  
+                  (
+                      event.clientX -
+                      dragStartX
+                  );
+
               mapY =
                   startMapY +
-                  (event.clientY -
-                  dragStartY);
-  
-  
+                  (
+                      event.clientY -
+                      dragStartY
+                  );
+
               updateMapTransform();
   
           }
       );
-  
-  
+
       window.addEventListener(
           "mouseup",
           () => {
-  
-              draggingMap = false;
-  
+
+              draggingMap =
+                  false;
+
               viewport.classList.remove(
                   "dragging"
               );
-  
+
           }
       );
-  
-  
+
       viewport.addEventListener(
           "wheel",
           event => {
-  
+
               event.preventDefault();
-  
-  
+
               zoomMap(
                   event.deltaY < 0
                       ? 0.05
                       : -0.05
               );
-  
+
           },
           {
               passive: false
           }
       );
-  
+
   }
-  
-  
+
   /* =========================================================
      BROUILLARD
   ========================================================= */
-  
+
   function setupFogCanvas() {
-  
+
       const canvas =
           document.getElementById(
               "fogCanvas"
           );
-  
-  
+
       resizeFogCanvas();
-  
-  
+
       window.addEventListener(
           "resize",
           resizeFogCanvas
       );
-  
-  
+
       canvas.addEventListener(
           "mousedown",
           event => {
-  
+
               if (
                   !fogEditing ||
                   !fogEnabled
-              ) return;
-  
-  
-              fogDrawing = true;
-  
-              drawFog(event);
+              )
+                  return;
+
+              fogDrawing =
+                  true;
+
+              drawFog(
+                  event
+              );
   
           }
       );
-  
-  
+
       canvas.addEventListener(
           "mousemove",
           event => {
-  
+
               if (
                   !fogDrawing ||
                   !fogEditing ||
                   !fogEnabled
-              ) return;
-  
-  
-              drawFog(event);
-  
+              )  
+                  return;
+
+              drawFog(
+                event
+              );
+
           }
       );
-  
-  
+
       window.addEventListener(
           "mouseup",
           () => {
-  
-              fogDrawing = false;
-  
+
+              fogDrawing =
+                  false;
+
           }
       );
-  
+
   }
-  
-  
+
   function resizeFogCanvas() {
-  
+
       const canvas =
           document.getElementById(
               "fogCanvas"
           );
-  
-  
+
       canvas.width =
           canvas.clientWidth;
-  
+
       canvas.height =
           canvas.clientHeight;
-  
-  
+
       redrawFog();
-  
   }
-  
-  
-  function setFog(enabled) {
-  
-      fogEnabled = enabled;
-  
-  
+
+  function setFog(
+      enabled
+  ) {
+
+      fogEnabled =
+          enabled;
+
       const canvas =
           document.getElementById(
               "fogCanvas"
           );
-  
-  
+
       canvas.style.display =
           enabled
               ? "block"
               : "none";
-  
-  
+
       document
-          .getElementById("fogOnButton")
+          .getElementById(
+              "fogOnButton"
+          )
           .classList.toggle(
               "active",
               enabled
           );
-  
-  
+
       document
-          .getElementById("fogOffButton")
+          .getElementById(
+              "fogOffButton"
+          )
           .classList.toggle(
               "active",
               !enabled
-          );
-  
-  
+          );  
+
       if (enabled) {
-  
+
           redrawFog();
-  
+
       }
-  
+
   }
-  
-  
+
   function toggleFogEdit() {
-  
+
       fogEditing =
           !fogEditing;
-  
-  
+
       document
           .getElementById(
               "fogEditButton"
@@ -3789,82 +4286,69 @@
               "active",
               fogEditing
           );
-  
-  
+
       const layer =
           document.getElementById(
               "fogLayer"
           );
-  
-  
+
       layer.style.pointerEvents =
           fogEditing
               ? "auto"
               : "none";
-  
-  
+
       layer.style.cursor =
           fogEditing
               ? "crosshair"
               : "default";
-  
+
   }
-  
-  
+
   function redrawFog() {
-  
+
       const canvas =
           document.getElementById(
               "fogCanvas"
           );
-  
-  
+
       if (
           !canvas.width ||
           !canvas.height
-      ) return;
-  
-  
+      )
+          return;
+
       const ctx =
-          canvas.getContext("2d");
-  
-  
+          canvas.getContext(
+              "2d"
+          );
+
       ctx.clearRect(
           0,
           0,
           canvas.width,
           canvas.height
       );
-  
-  
-      if (!fogEnabled)
+
+      if (
+          !fogEnabled
+      )
           return;
-  
-  
+
       ctx.fillStyle =
           "rgba(0,0,0,0.88)";
-  
-  
+
       ctx.fillRect(
           0,
           0,
           canvas.width,
           canvas.height
       );
-  
-  
-      /*
-          Ouverture centrale de démonstration.
-          Plus tard le brouillard sera synchronisé
-          avec le serveur et enregistré par carte.
-      */
-  
+
       ctx.globalCompositeOperation =
           "destination-out";
-  
-  
+
       ctx.beginPath();
-  
+
       ctx.arc(
           canvas.width / 2,
           canvas.height / 2,
@@ -3872,65 +4356,58 @@
           0,
           Math.PI * 2
       );
-  
+
       ctx.fill();
-  
-  
+
       ctx.globalCompositeOperation =
           "source-over";
-  
+
   }
-  
-  
-  function drawFog(event) {
-  
+
+  function drawFog(
+      event
+  ) {
+
       const canvas =
           document.getElementById(
               "fogCanvas"
           );
-  
-  
+
       const rect =
           canvas.getBoundingClientRect();
-  
-  
+
       const x =
           event.clientX -
           rect.left;
-  
-  
+
       const y =
           event.clientY -
           rect.top;
-  
-  
+
       const ctx =
-          canvas.getContext("2d");
-  
-  
-      /*
-          Clic gauche = révéler
-          Shift + clic = remettre du brouillard
-      */
-  
-      if (event.shiftKey) {
-  
+          canvas.getContext(
+              "2d"
+          );
+
+      if (
+          event.shiftKey
+      ) {
+
           ctx.globalCompositeOperation =
               "source-over";
-  
+
           ctx.fillStyle =
               "rgba(0,0,0,0.88)";
-  
+
       } else {
-  
+
           ctx.globalCompositeOperation =
               "destination-out";
-  
+
       }
-  
-  
+
       ctx.beginPath();
-  
+
       ctx.arc(
           x,
           y,
@@ -3938,168 +4415,149 @@
           0,
           Math.PI * 2
       );
-  
-      ctx.fill();
-  
-  
+
+    ctx.fill();
+
       ctx.globalCompositeOperation =
           "source-over";
-  
+
   }
-  
-  
+
   /* =========================================================
      CHAT
   ========================================================= */
-  
+
   function setupChat() {
-  
+
       document
-          .getElementById("chatInput")
+          .getElementById(
+              "chatInput"
+          )
           .addEventListener(
               "keydown",
               event => {
-  
+
                   if (
-                      event.key === "Enter"
+                      event.key ===
+                      "Enter"
                   ) {
-  
+
                       sendChatMessage();
-  
+
                   }
-  
+
               }
           );
-  
+
   }
-  
-  
+
   function sendChatMessage() {
-  
+
       const input =
           document.getElementById(
               "chatInput"
           );
-  
-  
+
       const message =
           input.value.trim();
-  
-  
+
       if (!message)
           return;
-  
-  
+
       const container =
           document.getElementById(
               "chatMessages"
           );
-  
-  
+
       const element =
-          document.createElement("div");
-  
-  
+          document.createElement(
+              "div"
+          );
+
       element.className =
           "chat-message mj";
-  
-  
+
       element.innerHTML = `
-  
+
           <span class="author">
+
               MJ :
+
           </span>
-  
-          ${escapeHTML(message)}
-  
+
+          ${escapeHTML(
+              message
+          )}
+
       `;
-  
-  
+
       container.appendChild(
           element
       );
-  
-  
+
       container.scrollTop =
           container.scrollHeight;
-  
-  
-      input.value = "";
-  
+
+      input.value =
+          "";
+
   }
-  
-  
-  function escapeHTML(text) {
-  
-      const div =
-          document.createElement("div");
-  
-      div.textContent =
-          text;
-  
-      return div.innerHTML;
-  
-  }
-  
-  
+
   /* =========================================================
-     LANCEMENT DE PARTIE
+     ESCAPE HTML
   ========================================================= */
-  
-  /*
-      Cette fonction est volontairement préparée
-      pour le futur système multiplayer.
-  
-      Plus tard elle enverra au serveur :
-  
-          startGame(gameCode)
-  
-      Le serveur passera alors la partie
-      de "lobby" à "started".
-  */
-  
+
+  function escapeHTML(
+      text
+  ) {
+
+      const div =
+          document.createElement(
+              "div"
+          );
+
+      div.textContent =
+          text ?? "";
+
+      return div.innerHTML;
+
+  }
+
+  /* =========================================================
+     LANCEMENT
+  ========================================================= */
+
   function startGame() {
-  
+
       const status =
           document.getElementById(
               "gameStatus"
           );
-  
-  
+
       status.textContent =
           "EN COURS";
-  
-  
+
       status.classList.add(
           "started"
       );
-  
+
   }
-  
   
   /* =========================================================
      INITIALISATION VISUELLE
   ========================================================= */
-  
+
   setTimeout(
       () => {
-  
-          /*
-              Pour le prototype,
-              la partie démarre déjà
-              en mode MJ utilisable.
-  
-              Le vrai bouton "Lancer la partie"
-              sera dans le lobby.
-          */
-  
-          setFog(false);
-  
+
+          setFog(
+              false
+          );
+
       },
       100
   );
-  
-  
+
   </script>
   
   </body>
