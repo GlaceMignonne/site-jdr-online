@@ -3770,30 +3770,36 @@
 
       /*  TALENTS  */
 
-      const newTalents = [];
+          const newTalents = [];
 
-      document
-          .querySelectorAll(
-              "[data-talent]"
-          )
-          .forEach(
-              input => {
+          document
+              .querySelectorAll(
+                  "[data-talent]"
+              )
+              .forEach(
+                  input => {
 
-                  const value =
-                      input.value.trim();
+                    const value =
+                          input.value.trim();
 
-                  if (
-                      value !== ""
-                  ) {
+                      if (value !== "") {
 
-                      newTalents.push(
-                          value
-                      );
-  
+                          /*
+                           * On conserve les talents
+                           * sous forme d'objet JSON.
+                           * Cela évite que Supabase
+                           * transforme les talents en
+                           * simples chaînes de caractères.
+                           */
+
+                          newTalents.push({
+                              name: value
+                          });
+
+                      }
+
                   }
-
-              }
-          );
+              );
 
       /*  SAUVEGARDE SUPABASE  */
 
