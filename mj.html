@@ -3320,60 +3320,104 @@
 
       /*  TALENTS  */
 
-      const talentsHTML =
-          talents
-              .map(
-                  (talent, index) => {
+          const talentsHTML =
+              talents
+                  .map(
+                      (talent, index) => {
 
-                      /* Les talents sont des objets JSON. On essaie de récupérer leur nom/texte. */
+                          const talentName =
+                              typeof talent === "object"
+                                  ? (
+                                      talent.name ||
+                                      ""
+                                  )
+                                  : talent;
 
-                      const talentName =
-                          typeof talent === "object"
-                              ? (
-                                  talent.name ??
-                                  talent.nom ??
-                                  talent.title ??
-                                  talent.talent ??
-                                  talent.description ??
-                                  ""
-                              )
-                              : talent;
+                          const talentValue =
+                              typeof talent === "object"
+                                  ? (
+                                      talent.value ?? 0
+                                  )
+                                  : 0;
 
-                      return `
+                          const classGranted =
+                              typeof talent === "object"
+                                  ? Boolean(
+                                      talent.classGranted
+                                  )
+                                  : false;
 
-                          <div
-                              class="talent-row"
-                              data-talent-row="${index}"
-                          >
+                          return `
 
-                              <input
-                                  class="sheet-edit-value"
-                                  data-talent="${index}"
-                                  value="${escapeHTML(
-                                      String(talentName)
-                                  )}"
+                              <div
+                                  class="talent-row"
+                                  data-talent-row="${index}"
                               >
 
-                              <button
-                                  type="button"
-                                  class="talent-delete-btn"
-                                  onclick="
-                                      deleteTalentFromSheet(
-                                          '${character.id}',
-                                          ${index}
-                                      )
-                                  "
-                              >
-                                  🗑
-                              </button>
+                                  <input
+                                      class="sheet-edit-value talent-name"
+                                      data-talent="${index}"
+                                      data-talent-field="name"
+                                      value="${escapeHTML(
+                                          String(
+                                              talentName
+                                          )
+                                      )}"
+                                      placeholder="Nom du talent"
+                                  >
 
-                          </div>
+                                  <input
+                                      class="sheet-edit-value talent-value"
+                                      data-talent="${index}"
+                                      data-talent-field="value"
+                                      type="number"
+                                      value="${escapeHTML(
+                                          String(
+                                              talentValue
+                                          )
+                                      )}"
+                                      placeholder="Valeur"
+                                  >
 
-                      `;
+                                  <label
+                                      class="talent-class-label"
+                                  >
 
-                  }
-              )
-              .join("");
+                                      <input
+                                          type="checkbox"
+                                          data-talent="${index}"
+                                          data-talent-field="classGranted"
+                                          ${
+                                              classGranted
+                                                  ? "checked"
+                                                  : ""
+                                          }
+                                      >
+
+                                      Classe
+
+                                  </label>
+
+                                  <button
+                                      type="button"
+                                      class="talent-delete-btn"
+                                      onclick="
+                                          deleteTalentFromSheet(
+                                              '${character.id}',
+                                              ${index}
+                                          )
+                                      "
+                                  >
+                                      🗑
+                                  </button>
+
+                              </div>
+
+                          `;
+
+                      }
+                  )
+                  .join("");
 
       /*  COEURS  */
 
