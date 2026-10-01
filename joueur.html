@@ -1762,6 +1762,165 @@ async function loadPlayerCharacter() {
 
     return true;
 }
+
+  /* =====================================================
+   CHARGEMENT DES AUTRES JOUEURS
+===================================================== */
+
+async function loadOtherPlayers() {
+
+    const partyCode =
+        localStorage.getItem("jdr_party_code");
+
+    if (!partyCode) {
+        console.error(
+            "Aucun code de partie trouvé."
+        );
+        return;
+    }
+
+    const playerId =
+        localStorage.getItem("jdr_player_id");
+
+
+    /* =====================================================
+       JOUEURS CONNECTÉS
+    ===================================================== */
+
+    const {
+        data: playerRows,
+        error: playerError
+    } = await supabaseClient
+        .from("players")
+        .select(`
+            id,
+            name,
+            character_name,
+            connected,
+            ready,
+            user_id,
+            character_id
+        `)
+        .eq("party_code", partyCode)
+        .eq("connected", true)
+        .order("name");
+
+
+    if (playerError) {
+
+        console.error(
+            "Erreur récupération joueurs :",
+            playerError
+        );
+
+        return;
+    }
+
+
+    const rows =
+        playerRows || [];
+
+
+    /* =====================================================
+       RÉCUPÉRATION DES PERSONNAGES
+    ===================================================== */
+
+    const characterIds =
+        rows
+            .map(player => player.character_id)
+            .filter(Boolean);
+
+
+    let characterRows = [];
+
+
+    if (characterIds.length > 0) {
+
+        const {
+            data: characterData,
+            error: characterError
+        } = await supabaseClient
+            .from("characters")
+            .select(`
+                id,
+                name,
+                hearts,
+                luck
+            `)
+            .in(
+                "id",
+                characterIds
+            );
+
+
+        if (characterError) {
+
+            console.error(
+                "Erreur récupération personnages :",
+                characterError
+            );
+
+            return;
+        }
+
+
+        characterRows =
+            characterData || [];
+
+    }
+
+
+    /* =====================================================
+       CONSTRUCTION DES AUTRES JOUEURS
+    ===================================================== */
+
+    otherPlayers =
+        rows
+            .filter(
+                player =>
+                    player.id !== playerId
+            )
+            .map(player => {
+
+                const character =
+                    characterRows.find(
+                        character =>
+                            character.id ===
+                            player.character_id
+                    );
+
+
+                return {
+
+                    name:
+                        character?.name ||
+                        player.character_name ||
+                        player.name ||
+                        "Joueur",
+
+                    hearts:
+                        Array.isArray(
+                            character?.hearts
+                        )
+                            ? character.hearts
+                            : [],
+
+                    chance:
+                        Number(
+                            character?.luck
+                        ) || 0
+
+                };
+
+            });
+
+
+    console.log(
+        "=== AUTRES JOUEURS ===",
+        otherPlayers
+    );
+
+}
     
   /* =========================================================
      COEURS
