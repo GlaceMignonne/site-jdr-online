@@ -3626,7 +3626,9 @@
 
   }
 
-  function addTalentToSheet(characterId) {
+  function addTalentToSheet(
+      characterId
+  ) {
 
       const container =
           document.getElementById(
@@ -3639,11 +3641,13 @@
 
       const index =
           container.querySelectorAll(
-              "[data-talent]"
+              "[data-talent-row]"
           ).length;
 
       const row =
-          document.createElement("div");
+          document.createElement(
+              "div"
+          );
 
       row.className =
           "talent-row";
@@ -3654,11 +3658,35 @@
       row.innerHTML = `
 
           <input
-              class="sheet-edit-value"
+              class="sheet-edit-value talent-name"
               data-talent="${index}"
+              data-talent-field="name"
               value=""
-              placeholder="Nouveau talent"
+              placeholder="Nom du talent"
           >
+
+          <input
+              class="sheet-edit-value talent-value"
+              data-talent="${index}"
+              data-talent-field="value"
+              type="number"
+              value="0"
+              placeholder="Valeur"
+          >
+
+          <label
+              class="talent-class-label"
+          >
+
+              <input
+                  type="checkbox"
+                  data-talent="${index}"
+                  data-talent-field="classGranted"
+              >
+
+              Classe
+
+          </label>
 
           <button
               type="button"
@@ -3670,16 +3698,20 @@
               🗑
           </button>
 
-      `;
+    `  ;
 
-      container.appendChild(row);
+      container.appendChild(
+          row
+      );
 
       const input =
           row.querySelector(
-              "[data-talent]"
+              '[data-talent-field="name"]'
           );
 
-      input.focus();
+      if (input) {
+          input.focus();
+      }
 
   }
 
